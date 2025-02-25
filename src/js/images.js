@@ -11,6 +11,8 @@ export const imgs = {
     appstore: 'assets/imgs/template/appstore.png',
     ggPlay: 'assets/imgs/template/google-play.png',
     payment: 'assets/imgs/template/payment-method.png',
-    logo2: 'assets/imgs/template/logo-2.svg'
+    logo2: 'assets/imgs/template/logo-2.svg',
+    amazon: 'assets/imgs/page/account/amazon.svg',
+    google: 'assets/imgs/page/account/google.svg'
   };
   export default imgs;

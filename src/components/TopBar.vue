@@ -8,7 +8,9 @@
       </ul>
     </div>
     <div class="info-topbar text-center d-none d-xl-block"><span class="font-xs color-brand-3">Free shipping for all orders over</span><span class="font-sm-bold color-success"> $75.00</span></div>
-    <div class="menu-topbar-right"><span class="font-xs color-brand-3">Need help? Call Us:</span><span class="font-sm-bold color-success"> + 1800 900</span>
+    <div class="menu-topbar-right">
+      <router-link class="font-xs color-brand-3" to="/login">Sign in</router-link>
+      <router-link class="font-xs color-brand-3 ms-3" to="/register">Sign up</router-link>
       <div class="dropdown dropdown-language">
         <button class="btn dropdown-toggle" id="dropdownPage" type="button" data-bs-toggle="dropdown" aria-expanded="true" data-bs-display="static"><span class="dropdown-right font-xs color-brand-3"><img :src="imgs.en" alt="Ecom"> English</span></button>
           <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownPage" data-bs-popper="static">
