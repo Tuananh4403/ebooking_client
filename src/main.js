@@ -4,7 +4,7 @@ import 'bootstrap';
 import { createApp } from 'vue'
 import App from '../src/pages/HomePage.vue'
 import store from '@/store/store';
-import router from '@/router/router';
+import router from '@/router/router.js';
 import mitt from 'mitt';
 import Toast, { useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
@@ -14,9 +14,11 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 async function bootstrap() {
     const app = createApp(App)
+    library.add(fas, far, fab,faAngleRight, faAngleLeft,faUser);
 
     app.use(router);
     app.use(store)
