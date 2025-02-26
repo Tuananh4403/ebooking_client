@@ -50,7 +50,7 @@
   </template>
   
   <script>
-  import ReSetPassword from './ReSetPassword.vue';
+  import ReSetPassword from './ResetPass.vue';
   
   export default {
     components: {
