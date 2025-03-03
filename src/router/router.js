@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
 import Login from '@/components/auth/Login.vue'
 import Register from '@/components/auth/Register.vue'
+import Pet from '@/components/pet/Index.vue'
+import ListRoomEmpty from '@/components/booking/Index.vue'
+import ListBooking from '@/components/booking/ListBooking.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +23,21 @@ const router = createRouter({
       path: '/register',
       name: 'Register',
       component: Register
+    },
+    {
+      path: '/pet',
+      name: 'Pet',
+      component: Pet
+    },
+    {
+      path: '/list-room-empty',
+      name: 'ListRoomEmpty',
+      component: ListRoomEmpty
+    },
+    {
+      path: '/list-booking',
+      name: 'ListBooking',
+      component: ListBooking
     },
     // {
     //   path: '/customer',

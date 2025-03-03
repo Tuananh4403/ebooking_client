@@ -13,6 +13,8 @@ export const imgs = {
     payment: 'assets/imgs/template/payment-method.png',
     logo2: 'assets/imgs/template/logo-2.svg',
     amazon: 'assets/imgs/page/account/amazon.svg',
-    google: 'assets/imgs/page/account/google.svg'
+    google: 'assets/imgs/page/account/google.svg',
+    meo: 'assets/imgs/template/meo.jpg',
+    hotel: 'assets/imgs/template/hotel.jpg',
   };
   export default imgs;

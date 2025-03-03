@@ -6,8 +6,7 @@
     <div class="container">
       <div class="main-header">
         <div class="header-left">
-          <div class="header-logo"><a class="d-flex" href="index.html"><img alt="Ecom"
-                :src="imgs.logo"></a></div>
+          <div class="header-logo"><a class="d-flex" href="index.html"><img alt="Ecom" :src="imgs.logo"></a></div>
           <div class="header-search">
             <div class="box-header-search">
               <form class="form-search" method="post" action="#">
@@ -24,8 +23,8 @@
                 </li>
                 <li class="has-children"><router-link to="shop-grid.html">Đặt lịch</router-link>
                   <ul class="sub-menu two-col">
-                    <li><router-link to="shop-grid.html">Danh sách phòng còn trống</router-link></li>
-                    <li><router-link to="shop-grid-2.html">Phòng đã đặt</router-link></li>
+                    <li><router-link to="/list-room-empty">Danh sách phòng còn trống</router-link></li>
+                    <li><router-link to="/list-booking">Phòng đã đặt</router-link></li>
                   </ul>
                 </li>
                 <li class="has-children"><router-link to="shop-vendor-list.html">Thanh toán</router-link>
@@ -35,7 +34,7 @@
                 </li>
                 <li class="has-children"><router-link to="#">Thú cưng</router-link>
                   <ul class="sub-menu">
-                    <li><router-link to="page-about-us.html">Thú cưng của bạn</router-link></li>
+                    <li><router-link to="/pet">Thú cưng của tôi</router-link></li>
                     <li><router-link to="page-contact.html">Theo dõi thú cưng</router-link></li>
                   </ul>
                 </li>
@@ -72,15 +71,15 @@ export default {
   components: {
     TopBar
   },
-  data(){
+  data() {
     return {
       imgs
     }
-  } 
+  }
 }
 </script>
 <style scoped>
 .main-menu {
-  margin-bottom: 0 !important; 
+  margin-bottom: 0 !important;
 }
 </style>
