@@ -52,21 +52,49 @@ const router = createRouter({
     // },
   ]
 })
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
+const router = createRouter({
+  history: createWebHistory('/'),
+  routes
+})
+// router.beforeEach(async (to, from, next) => {
+//   const token = getToken();
+
+//   if (to.matched.some((record) => record.meta.requiresAuth)) {
+//     // Check if the user is authenticated
 //     if (!store.getters.isAuthenticated) {
-//       next({ name: 'Login' }); 
-//     } else {
-//       const userRoles = store.getters.roles;
-//       const requiredRoles = to.meta.roles;
-//       if (requiredRoles && !requiredRoles.some(role => userRoles.includes(role))) {
-//         next({ name: 'Home' }); 
-//       } else {
-//         next();
+//       next({ name: 'HomePage' });
+//       return;
+//     }
+
+//     // Check if the token has expired
+//     if (isTokenExpired(token.accessToken)) {
+//       try {
+//         await store.dispatch('refreshAccessToken');
+//         const newToken = getToken();
+
+//         if (isTokenExpired(newToken.refreshToken)) {
+//           store.dispatch('logout');
+//           next({ name: 'HomePage' });
+//           return;
+//         }
+//       } catch (error) {
+//         console.error('Error refreshing token:', error);
+//         store.dispatch('logout');
+//         next({ name: 'HomePage' });
+//         return;
 //       }
 //     }
-//   } else {
-//     next();
+
+//     // Role authorization check
+//     const requiredRoles = to.meta.role;
+//     const userRoles = store.getters.userRole;
+//     if (requiredRoles && !requiredRoles.some((role) => role.includes(userRoles))) {
+//       next({ name: 'HomePage' });
+//       return;
+//     }
 //   }
+
+//   next();
 // });
+
 export default router

@@ -33,7 +33,7 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <input class="font-md-bold btn btn-buy submit" type="submit" value="Đăng nhập" @click="handleSubmit">
+                  <input class="font-md-bold btn btn-buy submit" type="submit" value="Đăng nhập" @click="handleLogin">
                 </div>
                 <div class="mt-20"><span class="font-xs color-gray-500 font-medium">Bạn chưa có tài khoản?</span><router-link class="font-xs color-brand-3 font-medium"
                     to="/register">Đăng kí ngay</router-link></div>
@@ -51,7 +51,7 @@
   
   <script>
   import ReSetPassword from '@/components/auth/ResetPass.vue';
-  
+  import { getUserRole } from '@/utils/auth';
   export default {
     components: {
       ReSetPassword
@@ -86,19 +86,24 @@
             break;
         }
       },
-      handleSubmit(event) {
-        event.preventDefault();
-        this.errors = {};
-  
-        const fields = Object.keys(this.form);
-        fields.forEach(field => {
-          this.validateField(field);
-        });
-  
-        if (Object.keys(this.errors).length === 0) {
-          alert('Đăng nhập thành công!');
+   
+      async handleLogin() {
+        try {
+          await this.$store.dispatch('login', {
+            email: this.form.email,
+            password: this.form.password,
+          });
+          if(getUserRole() === 'Customer'){
+            this.$router.push('/list-room-empty');
+          }
+          if(getUserRole().includes('Doctor')){
+            this.$router.push('/record-list');
+          }
+        } catch (error) {
+          console.error('Login failed:', error);
+
         }
-      }
+      },
     }
   }
   </script>

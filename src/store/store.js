@@ -2,7 +2,7 @@
 import { createStore } from 'vuex';
 import { apiClient } from '@/api/axios';
 import { toastSuccess, toastError, toastWarning } from '@/utils/toast';
-import { saveToken, saveUserId, saveUserName, getToken, getUserId, getUserName, saveUserRole, getUserRole} from '@/utils/auth';
+import { saveToken, saveUserId, saveUserName, getToken, getUserId, getUserName, saveUserRole, getUserRole, saveUserFullName } from '@/utils/auth';
 
 export default createStore({
   state: {
@@ -14,7 +14,7 @@ export default createStore({
     setUser(state, user) {
       state.currentUser = user;
     },
-    setToken(state, token) {
+    setTokens(state, token) {
       state.token = token;
     },
     setRole(state, role) {
@@ -31,28 +31,33 @@ export default createStore({
   },
   actions: {
     async login({ commit }, { email, password }) {
-      try {
-        const response = await apiClient.post('/api/auth/authenticate', { username: email, password });
-        console.log(response);
-        if (response.data.success) {
-          const { id, fullName, email, username, role, token } = response.data.data;
-          const user = { id, fullName, email, username , role};
+        // Make the login API request
+        const response = await apiClient.post('/api/account/login', { username: email, password });
+        if (response.data.statusCode === 200) {
+          const { userId, firstName, lastName, email, username, role, accessToken, refreshToken } = response.data.data;
+          
+          // Construct the user object
+          const user = { userId, firstName, lastName, email, username, role };
+          
           commit('setUser', user);
-          commit('setToken', token);
-          saveToken(token);
-          console.log(getToken());
-          saveUserId(id);
+          commit('setRole', role);
+          commit('setTokens', {
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          });
+  
+          
+          // Save the token and user data to localStorage/sessionStorage
+          saveToken(accessToken, refreshToken); // Save token (you only need to call this once)
+          saveUserId(userId);
+          saveUserFullName(`${firstName} ${lastName}`);
           saveUserName(username);
           saveUserRole(role);
           toastSuccess("Đăng nhập thành công!");
         } else {
           toastWarning(response.data.message);
         }
-      } catch (error) {
-        toastError('Đăng nhập thất bại');
-        console.log(error);
-        throw error;
-      }
+      
     },
     logout({ commit }) {
       commit('logout');
@@ -60,16 +65,37 @@ export default createStore({
       saveUserId(null);
       saveUserName(null);
       saveUserRole(null);
+      saveUserFullName(null);
     },
     checkAuth({ commit }) {
       const token = getToken();
       const userId = getUserId();
       const userName = getUserName();
       const role = getUserRole();
+      
       if (token && userId && userName) {
-        commit('setToken', token);
+        commit('setTokens', token);
         commit('setUser', { Id: userId, Username: userName, Role: role });
         commit('setRole', role);
+      }
+    },
+    refreshAccessToken({ commit, state }) {
+      try {
+        apiClient.post('/api/auth/refresh-token', {
+          refreshToken: state.token.refreshToken
+        })
+        .then((response) => {
+          const { accessToken, refreshToken } = response.data.data;
+          commit('setTokens', {
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          });
+          saveToken( accessToken , refreshToken); // Update localStorage with new token
+        });
+      } catch (error) {
+        console.error('Token refresh failed:', error);
+        toastError('Phiên đã hết hạn. Vui lòng đăng nhập lại.');
+        throw error;
       }
     },
   },

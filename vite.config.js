@@ -4,9 +4,9 @@ import vue from '@vitejs/plugin-vue';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { glob } from 'glob';
 import path from 'node:path';
-
-const resourceJsFiles = glob.sync('src/**/*.js');
-const resourceCssFiles = glob.sync('src/**/*.css');
+import { fileURLToPath, URL } from 'node:url'
+const resourceJsFiles = glob.sync('./src/**/*.js');
+const resourceCssFiles = glob.sync('./src/**/*.css');
 
 export default defineConfig({
     server: {
@@ -26,7 +26,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "./src"),
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
             "~scss": path.resolve(__dirname, "./public/assets/scss"),
         },
     },
