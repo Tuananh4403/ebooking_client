@@ -5,57 +5,67 @@ import Register from '@/components/auth/Register.vue'
 import Pet from '@/components/pet/Index.vue'
 import ListRoomEmpty from '@/components/booking/Index.vue'
 import ListBooking from '@/components/booking/ListBooking.vue'
-
+import AdminPage from "@/pages/AdminPage.vue";
+import dashboard from "@/components/admin/dashboard.vue";
+import listBarn from "@/components/admin/component/list-barn.vue";
+import listLocation from "@/components/admin/component/list-location.vue";
+const route = [
+  {
+    path: "/",
+    component: HomePage,
+    meta: { role: "customer" },
+    children: [
+      {
+        path: '/login',
+        name: 'Login',
+        component: Login
+      },
+      {
+        path: '/register',
+        name: 'Register',
+        component: Register
+      },
+      {
+        path: '/pet',
+        name: 'Pet',
+        component: Pet
+      },
+      {
+        path: '/list-room-empty',
+        name: 'ListRoomEmpty',
+        component: ListRoomEmpty
+      },
+      {
+        path: '/list-booking',
+        name: 'ListBooking',
+        component: ListBooking
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    component: AdminPage,
+    // meta: { role: "admin" },
+    children: [
+      {
+        path: "danh-sach-chuong",
+        component: listBarn,
+      },
+      {
+        path: "danh-sach-vi-tri",
+        component: listLocation,
+      },
+    ],
+  },
+]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'HomePage',
-      component: HomePage
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register
-    },
-    {
-      path: '/pet',
-      name: 'Pet',
-      component: Pet
-    },
-    {
-      path: '/list-room-empty',
-      name: 'ListRoomEmpty',
-      component: ListRoomEmpty
-    },
-    {
-      path: '/list-booking',
-      name: 'ListBooking',
-      component: ListBooking
-    },
-    // {
-    //   path: '/customer',
-    //   meta: { requiresAuth: true, role: ['Customer'] },
-    //   children: [
-    //     {
-    //       path: 'updatePet',
-    //       name: 'updatePet',
-    //       component: UpdatePet
-    //     },
-    //   ]
-    // },
-  ]
+  routes: route
 })
-const router = createRouter({
-  history: createWebHistory('/'),
-  routes
-})
+// const router = createRouter({
+//   history: createWebHistory('/'),
+//   routes
+// })
 // router.beforeEach(async (to, from, next) => {
 //   const token = getToken();
 
