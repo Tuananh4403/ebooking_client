@@ -3,84 +3,39 @@
     <div class="modal-content">
       <div class="icon-group">
         <div class="redo-icon" @click="handleRedo">
-          <font-awesome-icon :icon="['fas', 'redo-alt']" />
+          <font-awesome-icon :icon="['fas', 'redo-alt']"/>
         </div>
         <div class="close-icon" @click="closeModal">
-          <font-awesome-icon :icon="['fas', 'times-circle']" />
+          <font-awesome-icon :icon="['fas', 'times-circle']"/>
         </div>
       </div>
+      <h2 v-if="locationId != null" class="form-title">Cập Nhật Vị Trí Chuồng</h2>
+      <h2 v-else class="form-title">Tạo Vị Trí Chuồng Mới</h2>
 
-      <h2 class="form-title">TẠO MỚI CHUỒNG</h2>
-
-      <form @submit.prevent="submitForm">
+      <form >
         <div class="form-group-row">
           <div class="form-group">
             <label for="name">Nhập tên chuồng:<span class="required">*</span></label>
-            <input type="text" id="name" v-model="form.name" required placeholder="Vui lòng nhập tên chuồng...">
+            <input type="text" id="name" v-model="name" :disabled="isLoading" required
+                   placeholder="Vui lòng nhập tên vị trí chuồng... ">
           </div>
 
         </div>
         <div class="form-group-row">
           <div class="form-group">
             <label for="description">Mô tả:<span class="required">*</span></label>
-            <input type="text" id="description" v-model="form.description" required placeholder="Vui lòng nhập mô tả...">
-          </div>
-          <div class="form-group">
-            <label for="image">Tải lên hình ảnh:</label>
-            <input type="file" id="image" @change="handleImageUpload" accept="image/*" required>
-          </div>
-
-        </div>
-
-        <!-- Row 3: Nhân viên -->
-        <div class="form-group-row">
-          <div class="form-group">
-            <label for="type">Loại:<span class="required">*</span></label>
-            <vue-multiselect v-model="selectedType"
-                             :options="types"
-                             :multiple="false"
-                             placeholder="Chọn loại"
-                             label="name"
-                             track-by="userId"
-                             :searchable="true"
-                             @search-change="fetchBarnType($event)"
-                             @open="fetchBarnType('')">
-            </vue-multiselect>
-          </div>
-          <div class="form-group">
-            <label for="location">Vị trí:<span class="required">*</span></label>
-            <vue-multiselect
-                v-model="selectedLocation"
-                :options="locations"
-                :multiple="false"
-                placeholder="Chọn vị trí"
-                label="name"
-                track-by="id"
-                :searchable="true"
-                @search-change="fetchLocation($event)"
-                @open="fetchLocation('')">
-            </vue-multiselect>
-          </div>
-          <div class="form-group">
-            <label for="location">Camera:<span class="required">*</span></label>
-            <vue-multiselect
-                v-model="selectedCamera"
-                :options="cameras"
-                :multiple="false"
-                placeholder="Chọn camera"
-                label="name"
-                track-by="id"
-                :searchable="true"
-                @search-change="fetchCamera($event)"
-                @open="fetchCamera('')">
-            </vue-multiselect>
+            <input type="text" id="description" v-model="description" :disabled="isLoading" required
+                   placeholder="Vui lòng nhập mô tả...">
           </div>
         </div>
-
-
         <!-- Submit Button -->
         <div class="button-group">
-          <button type="submit">Tạo mới</button>
+          <button v-if="locationId==null" type="submit" :disabled="isLoading" @click="submitForm">
+            {{ isLoading ? 'Đang xử lý...' : 'Tạo mới' }}
+          </button>
+          <button v-else type="submit" :disabled="isLoading" @click="submitDataUpdate">
+            {{ isLoading ? 'Đang xử lý...' : 'Cập nhật' }}
+          </button>
         </div>
       </form>
     </div>
@@ -88,96 +43,70 @@
 </template>
 
 <script>
-import { axiosPrivate } from '@/api/axios.js';
+import {storeApiPrivate} from '@/api/axios.js';
+import {toastError, toastSuccess, toastWarning} from "@/utils/toast.js";
 
 export default {
   name: 'AddUpdateLocation',
+  props: {
+    locationId: { // Receive barn ID for editing
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
-      form: {
-        name: '',
-        description: '',
-        dateStart: null,
-        dateEnd: null,
-        time: null,
-        RegisterFee: null,
-        image: null,
-      },
-      types: [
-        {
-          id: 1,
-          name: "test"
-        }
-      ],
-      locations: [],
-      cameras: [], // Added ranks
-      selectedType: '',
-      selectedLocation: '',
-      selectedCamera: '',
-      rankGrid: [{ rankId: null, startDate: '', endDate: '' }],
+      name: '',
+      description: '',
+      isEditMode: false,
+      isLoading: false,
+      location: null,
     };
   },
   methods: {
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file && file.size <= 5 * 1024 * 1024) {
-        this.form.image = file;
-      } else {
-        alert('Vui lòng chọn hình ảnh có kích thước nhỏ hơn 5MB.');
+    fetchLocationDetails(id) {
+      try {
+        console.log("test")
+        storeApiPrivate.get(`/api/location/${id}?api-version=1.0`)
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                this.location = response.data.data;
+                this.name =  this.location.name;
+                this.description =  this.location.description;
+
+              }
+            });
+      } catch (error) {
+        console.error('Error fetching barn details:', error);
       }
     },
-
-    fetchOptions(endpoint, targetArray, mapCallback, queryParams = {}) {
-      axiosPrivate.get(endpoint, { params: { pageNumber: 1, pageSize: 20, ...queryParams } })
-          .then(response => {
-            this[targetArray] = response.data.data.items.map(mapCallback);
-          })
-          .catch(error => console.error(`Error fetching ${targetArray}:`, error));
-    },
-
-    fetchCamera(searchTerm) {
-      this.fetchOptions('/api/reward', 'rewards', (r) => ({
-        id: r.id,
-        name: r.name
-      }), { Info: searchTerm });
-    },
-
-    fetchLocation(searchTerm) {
-      this.fetchOptions('/api/rank', 'ranks', (r) => ({
-        id: r.id,
-        name: r.name,
-      }), { Info: searchTerm });
-    },
-
-    fetchBarnType(searchTerm) {
-      this.fetchOptions('/api/user/staffs', 'staffs', (s) => ({
-        userId: s.userId,
-        name: s.fullName,
-      }), { Info: searchTerm });
-    },
-
-    addRankRow() {
-      this.rankGrid.push({ rankId: null, startDate: '', endDate: '' });
-    },
-
-    removeRankRow(index) {
-      if (this.rankGrid.length > 1) {
-        this.rankGrid.splice(index, 1);
-      }
-    },
-
-    async submitForm() {
+    submitForm() {
+      this.isLoading = true;
       try {
         const data = new FormData();
         data.append('name', this.form.name);
         data.append('description', this.form.description);
         data.append('barnTypeId', this.selectedType.id);
         data.append('locationId', this.selectedLocation.id);
-        data.append('cameraId', this.selectedCamera.id);
+        data.append('cameraId', this.selectedCamera.id ?? "");
         if (this.form.image) data.append('image', this.form.image);
-        const response = await axiosPrivate.post('/api/barn-detail', data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+
+        storeApiPrivate.post('/api/location?api-version=1.0', data, {
+          headers: {'Content-Type': 'multipart/form-data'},
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                var message = this.isEditMode ? "" : "Tạo chuồng thành công";
+                toastSuccess(message);
+              }
+            })
+            .catch(error => {
+              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+              console.error('Error fetching barn details:', error);
+            })
+            .finally(() => {
+              this.isLoading = true;
+            });
 
         this.closeModal();
       } catch (error) {
@@ -185,7 +114,36 @@ export default {
         alert('Có lỗi xảy ra, vui lòng thử lại.');
       }
     },
+    submitDataUpdate() {
+      this.isLoading = true;
+      try {
+        const data = {
+          name: this.name,
+          description: this.description,
+        }
+        storeApiPrivate.put(`/api/location?id=${this.location.id}&api-version=1.0`, data, {
+          headers: {"Content-Type": "application/json"},
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                var message = "Cập nhật chuồng thành công";
+                toastSuccess(message);
+              }
+            })
+            .catch(error => {
+              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+              console.error('Error fetching barn details:', error);
+            })
+            .finally(() => {
+              this.isLoading = true;
+            });
 
+        this.closeModal();
+      } catch (error) {
+        console.error('Error creating competition:', error);
+        alert('Có lỗi xảy ra, vui lòng thử lại.');
+      }
+    },
     closeModal() {
       this.resetForm();
       this.$emit('close');
@@ -196,17 +154,20 @@ export default {
     },
 
     resetForm() {
-      this.form = { name: '', description: '', dateStart: null, dateEnd: null, time: null, RegisterFee: null, image: null };
-      this.selectedStaffs = [];
-      this.selectedRewards = [];
-      this.rankGrid = [{ rankId: null, startDate: '', endDate: '' }];
+        this.name= ''
+          this.description=''
+
+      this.barn = null
     },
   },
 
   created() {
-    // this.fetchRewards('');
-    // this.fetchRanks('');
-    // this.fetchStaffs('');
+    console.log(this.locationId)
+
+    if (this.locationId) {
+      this.isEditMode = true;
+      this.fetchLocationDetails(this.locationId);
+    }
   },
 };
 </script>
@@ -243,9 +204,8 @@ export default {
 .redo-icon,
 .close-icon {
   cursor: pointer;
-  font-size: 20px;
+  font-size: 30px;
   margin-left: 10px;
-  color: #007bff;
 }
 
 .form-title {
@@ -315,12 +275,6 @@ button {
 
 button:hover {
   background-color: #0056b3;
-}
-
-.rank-grid {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
 }
 
 .rank-grid th, .rank-grid td {

@@ -46,11 +46,11 @@ export default {
         },
         {
           icon: 'store',
-          tooltip: 'Quản lí cuộc thi',
+          tooltip: 'Quản lí chuồng',
           submenu: [
-            {name: 'Danh sách cuộc thi', route: '/admin/list-competition'},
-            {name: 'Danh sách hạng thi đấu', route: '/admin/list-rank-competition'},
-            {name: 'Danh sách giải thưởng', route: '/admin/list-reward-competition'},
+            {name: 'Danh sách chuồng', route: '/admin/danh-sach-chuong'},
+            {name: 'Danh sách vị trí', route: '/admin/danh-sach-vi-tri'},
+            {name: 'Danh sách camera', route: '/admin/danh-sach-camera'},
           ],
         },
         {

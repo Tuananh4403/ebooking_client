@@ -1,99 +1,86 @@
 <template>
-  <div>
-        <div class="content">
-          <div class="title-search-container">
-            <h1 class="title">DANH SÁCH CHUỒNG</h1>
-            <button class="search-button" @click="openSearchModal">Tìm kiếm</button>
-            <button class="search-button" @click="openModal">Tạo</button>
+  <div class="content ">
+    <div class="title-search-container">
+      <h1 class="title">DANH SÁCH CHUỒNG</h1>
+      <button class="search-button" @click="openSearchModal">Tìm kiếm</button>
+      <button class="search-button" @click="openModal">Tạo</button>
+    </div>
 
-<!--            <font-awesome-icon class="add-button" :icon="['fas', 'plus']" @click="openModal" />-->
-          </div>
-
-          <!-- Modal tìm kiếm -->
-          <SearchModal 
-            v-if="showSearchModal" 
-            @close="closeSearchModal" 
-            @search="handleSearch" 
-          />
-          <vue-loading class="loading" :active="loading" :loader="'dots'" :color="'#22445d'" :can-cancel="true"
-                   :height="50"
-                   :Width="50"/>
-          <div class="table-container">
-            <table class="contest-table">
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên</th>
-                  <th>Loại</th>
-                  <th>Vị trí</th>
-                  <th>Camera</th>
-                  <th>Trạng thái</th>
-                  <th>Ngày tạo</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="competition in competitions" :key="competition.id">
-                  <td>{{ competition.name }}</td>
-                  <td>{{ competition.description }}</td>
-                  <td>{{ formatDate(competition.dateStart) }} - {{ formatDate(competition.dateEnd) }}</td>
-                  <td>{{ competition.statusDescription }}</td>
-                  <td>
-                    <strong>Hạng thi đấu:</strong>
-                    <ul>
-                      <li v-for="rank in competition.ranks" :key="rank.id">{{ rank.name }}</li>
-                    </ul>
-                  </td>
-                  <td>
-                    <font-awesome-icon class="edit-button" :icon="['fas', 'edit']" @click="openEditModal(competition.id)" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <vue-awesome-paginate
-              :total-items="totalCount"
-              :items-per-page="pageSize"
-              v-model="currentPage"
-              @click="onPageChange"
-          />
-          <!-- Modal tạo cuộc thi -->
-          <AddUpdateBarn
-            v-if="showModal && isCreating" 
-            @close="closeModal" 
-          />
-
-          <!-- Modal chỉnh sửa cuộc thi -->
-<!--          <UpdateCompetition -->
-<!--            v-if="showModal && !isCreating" -->
-<!--            :competitionId="selectedCompetitionId" -->
-<!--            @close="closeModal" -->
-<!--            @update-success="fetchCompetitions"-->
-<!--          />-->
-        </div>
+<!--    <SearchModal-->
+<!--        v-if="showSearchModal"-->
+<!--        @close="closeSearchModal"-->
+<!--        @search="handleSearch"-->
+<!--    />-->
+    <vue-loading class="loading" :active="loading" :loader="'dots'" :color="'#22445d'" :can-cancel="true"
+                 :height="50"
+                 :Width="50"/>
+    <div class="table-container">
+      <table class="contest-table">
+        <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên</th>
+          <th>Loại</th>
+          <th>Vị trí</th>
+          <th>Camera</th>
+          <th>Trạng thái</th>
+          <th>Ngày tạo</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(barn, index) in barns" :key="index">
+          <td>{{ index + 1 }}</td>
+          <td>{{ barn.name }}</td>
+          <td>{{ barn.barnTypeId != null ? barn.barnTypeResponse.name : '' }}</td>
+          <td>{{ barn.locationId != null ? barn.locationResponse.name : '' }}</td>
+          <td>{{ barn.cameraId != null ? barn.cameraResponse.name : '' }}</td>
+          <td>{{ barn.status != null ? formatBarnStatus(barn.status) : '' }}</td>
+          <td>{{ barn.createdTime != null ? formatDate(barn.createdTime) : '' }}</td>
+          <td>
+            <button class="edit-button" @click="openEditModal(barn.barnId)">Chỉnh sửa</button>
+            <button class="delete-button" @click="openEditModal(barn.barnId)">Xóa</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div v-if="totalCount > pageSize" class="example-one pagination-container">
+        <vue-awesome-paginate
+            :total-items="totalCount"
+            :items-per-page="pageSize"
+            v-model="currentPage"
+            @click="onPageChange"
+        />
       </div>
+    </div>
+
+    <AddUpdateBarn
+        v-if="showModal"
+        :barnId="isCreating ? null : selectedCompetitionId"
+        @close="closeModal"
+    />
+  </div>
 </template>
 
 
 <script>
 import AddUpdateBarn from '@/components/admin/component/add-update-barn.vue';
-import { axiosPrivate } from '@/api/axios.js';
+import {storeApiPrivate} from '@/api/axios.js';
 import {toastError, toastWarning} from "@/utils/toast.js";
+import {formatBarnStatus} from "@/constants/barn-status.js"
 
 export default {
   name: 'ListBarn',
   components: {
     AddUpdateBarn,
-    // UpdateCompetition,
-    // SearchModal,
   },
   data() {
     return {
-      showModal: false, // Dùng chung cho cả hai modal
-      showSearchModal: false, // Hiển thị modal tìm kiếm
-      competitions: [], // Danh sách cuộc thi
-      selectedCompetitionId: null, // ID cuộc thi cần chỉnh sửa
-      isCreating: false, // Phân biệt giữa tạo mới và chỉnh sửa
+      showModal: false,
+      showSearchModal: false,
+      barns: [],
+      selectedCompetitionId: null,
+      isCreating: false,
       currentPage: 1,
       pageSize: 10,
       totalCount: 0,
@@ -109,28 +96,20 @@ export default {
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
     },
-    /**
-     * Lấy danh sách cuộc thi từ API và sắp xếp theo ngày bắt đầu.
-     */
     fetchBarn() {
       this.loading = true;
-      axiosPrivate.get('/api/competition', {
+      storeApiPrivate.get('/api/BarnDetails?api-version=1.0', {
         params: {
-          pageNumber: 1,
-          pageSize: 20,
-          status: 1,
+          PageNumber: this.currentPage,
+          pageSize: this.pageSize,
         }
       })
           .then(response => {
-            if (response.data?.data?.items) {
-              this.competitions = response.data.data.items.sort((a, b) => {
-                const dateA = new Date(a.dateStart);
-                const dateB = new Date(b.dateStart);
-                if (dateA.getTime() === dateB.getTime()) {
-                  return new Date(b.dateEnd) - new Date(a.dateEnd);
-                }
-                return dateB - dateA;
-              });
+            if (response.data.statusCode === 200) {
+              const data = response.data.data;
+              this.barns = data.data;
+              this.totalCount = data.totalRecords;
+              this.pageSize = data.pageSize;
             } else {
               console.error('Dữ liệu API không đúng định dạng:', response.data);
             }
@@ -148,13 +127,18 @@ export default {
       await this.fetchBarn(); // Fetch data for the new page
     },
 
+
+    formatBarnStatus(status) {
+      return formatBarnStatus(status);
+    },
     openModal() {
-      this.isCreating = true; // Đặt trạng thái tạo mới
+      this.isCreating = true; // Set to create mode
+      this.selectedCompetitionId = null; // No ID for new barn
       this.showModal = true;
     },
-    openEditModal(competitionId) {
-      this.isCreating = false; // Đặt trạng thái chỉnh sửa
-      this.selectedCompetitionId = competitionId;
+    openEditModal(barnId) {
+      this.isCreating = false; // Set to edit mode
+      this.selectedCompetitionId = barnId; // Store barn ID
       this.showModal = true;
     },
 
@@ -162,6 +146,8 @@ export default {
       this.showModal = false;
       this.selectedCompetitionId = null;
       this.isCreating = false;
+      this.fetchBarn();
+
     },
     openSearchModal() {
       this.showSearchModal = true;
@@ -182,24 +168,17 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
 .main-container {
   display: flex;
 }
 
-.header-content-container {
-  flex-grow: 1;
-  margin-left: 60px; 
-  transition: margin-left 0.3s;
-}
-
 .sidebar.expanded + .header-content-container {
-  margin-left: 200px; 
+  margin-left: 200px;
 }
 
 .content {
   min-height: 60vh;
-  padding: 20px;
 }
 
 .title-search-container {
@@ -211,9 +190,9 @@ export default {
 .title {
   margin-left: 85px;
   margin-top: 40px;
-  margin-right: 50px; 
-  font-size: 36px; 
-  font-weight: bold; 
+  margin-right: 50px;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .search-button {
@@ -224,23 +203,42 @@ export default {
   padding: 0.5% 3%; /* Tăng nhẹ padding để tạo sự thoải mái */
   border-radius: 10px;
   cursor: pointer;
-  font-size: 120%; /* Tăng kích thước font để dễ đọc hơn */
+  font-size: 100%; /* Tăng kích thước font để dễ đọc hơn */
   line-height: 1.5; /* Tăng line-height để tạo không gian hơn */
   transition: background-color 0.3s;
   margin-right: 50px;
-  width: 12%; /* Giữ chiều rộng hợp lý */
+}
+
+.edit-button {
+  margin-top: 2%; /* Nhích xuống theo phần trăm */
+  background-color: #A0937D;
+  color: white;
+  border: none;
+  padding: 0.5% 3%; /* Tăng nhẹ padding để tạo sự thoải mái */
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 100%;
+  line-height: 1.5; /* Tăng line-height để tạo không gian hơn */
+  transition: background-color 0.3s;
+  margin-right: 20px;
+}
+
+.delete-button {
+  margin-top: 2%; /* Align with edit button */
+  background-color: #D9534F; /* Bootstrap Red */
+  color: white;
+  border: none;
+  padding: 0.5% 3%;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 100%;
+  line-height: 1.5;
+  transition: background-color 0.3s ease-in-out;
+  margin-right: 20px;
 }
 
 .search-button:hover {
-  background-color: gray; 
-}
-
-
-.add-button {
-  margin-top: 25px;
-  border: none;
-  border-radius: 5px;
-  font-size: 50px; 
+  background-color: gray;
 }
 
 .table-container {
@@ -260,37 +258,72 @@ export default {
   font-weight: bold;
   text-align: center;
   border-bottom: 2px solid #ddd;
-  border-top: none; 
-  border-left: none; 
-  border-right: none; 
+  border-top: none;
+  border-left: none;
+  border-right: none;
 }
 
 .contest-table td {
   padding: 12px 15px;
-  border-bottom: 1px solid #ddd; 
-  border-top: none; 
-  border-left: none; 
-  border-right: none; 
+  border-bottom: 1px solid #ddd;
+  border-top: none;
+  border-left: none;
+  border-right: none;
   text-align: center;
 }
 
 .contest-table thead {
-  background-color: #b2b4b6; 
+  background-color: #b2b4b6;
   color: #333;
 }
 
 .contest-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9; 
+  background-color: #f9f9f9;
 }
 
 .contest-table tbody tr:hover {
-  background-color: #f1f1f1; 
+  background-color: #f1f1f1;
 }
 
 .contest-table tbody ul {
   padding-left: 15px;
   text-align: center;
-  list-style-type: square; 
+  list-style-type: square;
   list-style: none;
 }
+
+
+.example-one .pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  column-gap: 10px;
+
+}
+
+.example-one .paginate-buttons {
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: rgb(242, 242, 242);
+  border: 1px solid rgb(217, 217, 217);
+  color: black;
+}
+.example-one .paginate-buttons:hover {
+  background-color: #d8d8d8;
+}
+.example-one .active-page {
+  background-color: #3498db;
+  border: 1px solid #3498db;
+  color: white;
+}
+.example-one .active-page:hover {
+  background-color: #2988c8;
+}
+.example-one .back-button:active,
+.example-one .next-button:active {
+  background-color: #c4c4c4;
+}
+
 </style>

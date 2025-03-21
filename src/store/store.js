@@ -32,12 +32,12 @@ export default createStore({
   actions: {
     async login({ commit }, { email, password }) {
         // Make the login API request
-        const response = await apiClient.post('/api/account/login', { username: email, password });
+        const response = await apiClient.post('/api/account/login?api-version=1.0', { username: email, password });
         if (response.data.statusCode === 200) {
-          const { userId, firstName, lastName, email, username, role, accessToken, refreshToken } = response.data.data;
+          const { userId, fullName, email, username, role, accessToken, refreshToken } = response.data.data;
           
           // Construct the user object
-          const user = { userId, firstName, lastName, email, username, role };
+          const user = { userId, fullName, email, username, role };
           
           commit('setUser', user);
           commit('setRole', role);
@@ -50,7 +50,7 @@ export default createStore({
           // Save the token and user data to localStorage/sessionStorage
           saveToken(accessToken, refreshToken); // Save token (you only need to call this once)
           saveUserId(userId);
-          saveUserFullName(`${firstName} ${lastName}`);
+          saveUserFullName(fullName);
           saveUserName(username);
           saveUserRole(role);
           toastSuccess("Đăng nhập thành công!");
@@ -81,7 +81,7 @@ export default createStore({
     },
     refreshAccessToken({ commit, state }) {
       try {
-        apiClient.post('/api/auth/refresh-token', {
+        apiClient.post('/api/auth/refresh-token?api-version=1.0', {
           refreshToken: state.token.refreshToken
         })
         .then((response) => {

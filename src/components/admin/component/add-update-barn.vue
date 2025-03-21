@@ -3,31 +3,33 @@
     <div class="modal-content">
       <div class="icon-group">
         <div class="redo-icon" @click="handleRedo">
-          <font-awesome-icon :icon="['fas', 'redo-alt']" />
+          <font-awesome-icon :icon="['fas', 'redo-alt']"/>
         </div>
         <div class="close-icon" @click="closeModal">
-          <font-awesome-icon :icon="['fas', 'times-circle']" />
+          <font-awesome-icon :icon="['fas', 'times-circle']"/>
         </div>
       </div>
+      <h2 v-if="barnId != null" class="form-title">Cập nhật chuồng</h2>
+      <h2 v-else class="form-title">Tạo Chuồng Mới</h2>
 
-      <h2 class="form-title">TẠO MỚI CHUỒNG</h2>
-
-      <form @submit.prevent="submitForm">
+      <form >
         <div class="form-group-row">
           <div class="form-group">
             <label for="name">Nhập tên chuồng:<span class="required">*</span></label>
-            <input type="text" id="name" v-model="form.name" required placeholder="Vui lòng nhập tên chuồng...">
+            <input type="text" id="name" v-model="form.name" :disabled="isLoading" required
+                   placeholder="Vui lòng nhập tên chuồng... ">
           </div>
 
         </div>
         <div class="form-group-row">
           <div class="form-group">
             <label for="description">Mô tả:<span class="required">*</span></label>
-            <input type="text" id="description" v-model="form.description" required placeholder="Vui lòng nhập mô tả...">
+            <input type="text" id="description" v-model="form.description" :disabled="isLoading" required
+                   placeholder="Vui lòng nhập mô tả...">
           </div>
           <div class="form-group">
             <label for="image">Tải lên hình ảnh:</label>
-            <input type="file" id="image" @change="handleImageUpload" accept="image/*" required>
+            <input type="file" id="image" @change="handleImageUpload" :disabled="isLoading" accept="image/*">
           </div>
 
         </div>
@@ -43,8 +45,19 @@
                              label="name"
                              track-by="userId"
                              :searchable="true"
+                             selectLabel=""
+                             selectedLabel=""
+                             deselectLabel=""
                              @search-change="fetchBarnType($event)"
+                             :disabled="isLoading"
                              @open="fetchBarnType('')">
+
+              <template #noResult>
+                <span class="no-results-text">Không tìm thấy</span>
+              </template>
+              <template #noOptions>
+                <span class="no-results-text">Không tìm thấy</span>
+              </template>
             </vue-multiselect>
           </div>
           <div class="form-group">
@@ -57,30 +70,53 @@
                 label="name"
                 track-by="id"
                 :searchable="true"
+                selectLabel=""
+                selectedLabel=""
+                deselectLabel=""
+                :disabled="isLoading"
                 @search-change="fetchLocation($event)"
                 @open="fetchLocation('')">
+              <template #noResult>
+                <span class="no-results-text">Không tìm thấy</span>
+              </template>
+              <template #noOptions>
+                <span class="no-results-text">Không tìm thấy</span>
+              </template>
             </vue-multiselect>
           </div>
           <div class="form-group">
-          <label for="location">Camera:<span class="required">*</span></label>
-          <vue-multiselect
-              v-model="selectedCamera"
-              :options="cameras"
-              :multiple="false"
-              placeholder="Chọn camera"
-              label="name"
-              track-by="id"
-              :searchable="true"
-              @search-change="fetchCamera($event)"
-              @open="fetchCamera('')">
-          </vue-multiselect>
+            <label for="location">Camera:<span class="required">*</span></label>
+            <vue-multiselect
+                v-model="selectedCamera"
+                :options="cameras"
+                :multiple="false"
+                placeholder="Chọn camera"
+                label="name"
+                track-by="id"
+                :searchable="true"
+                selectLabel=""
+                selectedLabel=""
+                deselectLabel=""
+                :disabled="isLoading"
+                @search-change="fetchCamera($event)"
+                @open="fetchCamera('')">
+              <template #noResult>
+                <span class="no-results-text">Không tìm thấy</span>
+              </template>
+              <template #noOptions>
+                <span class="no-results-text">Không tìm thấy</span>
+              </template>
+            </vue-multiselect>
+          </div>
         </div>
-        </div>
-
-
         <!-- Submit Button -->
         <div class="button-group">
-          <button type="submit">Tạo mới</button>
+          <button v-if="barnId==null" type="submit" :disabled="isLoading" @click="submitForm">
+            {{ isLoading ? 'Đang xử lý...' : 'Tạo mới' }}
+          </button>
+          <button v-else type="submit" :disabled="isLoading" @click="submitDataUpdate">
+            {{ isLoading ? 'Đang xử lý...' : 'Cập nhật' }}
+          </button>
         </div>
       </form>
     </div>
@@ -88,10 +124,17 @@
 </template>
 
 <script>
-import { axiosPrivate } from '@/api/axios.js';
+import {storeApiPrivate} from '@/api/axios.js';
+import {toastError, toastSuccess, toastWarning} from "@/utils/toast.js";
 
 export default {
   name: 'AddUpdateBarn',
+  props: {
+    barnId: { // Receive barn ID for editing
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       form: {
@@ -103,18 +146,15 @@ export default {
         RegisterFee: null,
         image: null,
       },
-      types: [
-        {
-          id: 1,
-          name: "test"
-        }
-      ],
+      types: [],
       locations: [],
-      cameras: [], // Added ranks
+      cameras: [],
       selectedType: '',
       selectedLocation: '',
       selectedCamera: '',
-      rankGrid: [{ rankId: null, startDate: '', endDate: '' }],
+      isEditMode: false,
+      isLoading: false,
+      barn: null
     };
   },
   methods: {
@@ -128,56 +168,79 @@ export default {
     },
 
     fetchOptions(endpoint, targetArray, mapCallback, queryParams = {}) {
-      axiosPrivate.get(endpoint, { params: { pageNumber: 1, pageSize: 20, ...queryParams } })
+      storeApiPrivate.get(endpoint + '?api-version=1.0', {params: {pageNumber: 1, pageSize: 20, ...queryParams}})
           .then(response => {
-            this[targetArray] = response.data.data.items.map(mapCallback);
+            if (response.data.data.data.length > 0) {
+              this[targetArray] = response.data.data.data.map(mapCallback);
+            }
           })
           .catch(error => console.error(`Error fetching ${targetArray}:`, error));
     },
 
     fetchCamera(searchTerm) {
-      this.fetchOptions('/api/reward', 'rewards', (r) => ({
+      this.fetchOptions('/api/Camera', 'cameras', (r) => ({
         id: r.id,
         name: r.name
-      }), { Info: searchTerm });
+      }), {name: searchTerm});
     },
 
     fetchLocation(searchTerm) {
-      this.fetchOptions('/api/rank', 'ranks', (r) => ({
+      this.fetchOptions('/api/Location', 'locations', (r) => ({
         id: r.id,
         name: r.name,
-      }), { Info: searchTerm });
+      }), {name: searchTerm});
     },
 
     fetchBarnType(searchTerm) {
-      this.fetchOptions('/api/user/staffs', 'staffs', (s) => ({
-        userId: s.userId,
-        name: s.fullName,
-      }), { Info: searchTerm });
+      this.fetchOptions('/api/BarnType', 'types', (s) => ({
+        id: s.id,
+        name: s.name,
+      }), {name: searchTerm});
     },
-
-    addRankRow() {
-      this.rankGrid.push({ rankId: null, startDate: '', endDate: '' });
-    },
-
-    removeRankRow(index) {
-      if (this.rankGrid.length > 1) {
-        this.rankGrid.splice(index, 1);
+    fetchBarnDetails(id) {
+      try {
+        storeApiPrivate.get(`/api/barnDetails/${id}?api-version=1.0`)
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                this.barn = response.data.data;
+                this.form.name =  this.barn.name;
+                this.form.description =  this.barn.description;
+                this.selectedType =  this.barn.barnTypeResponse;
+                this.selectedLocation =  this.barn.locationResponse;
+                this.selectedCamera =  this.barn.cameraResponse;
+              }
+            });
+      } catch (error) {
+        console.error('Error fetching barn details:', error);
       }
     },
-
-    async submitForm() {
+    submitForm() {
+      this.isLoading = true;
       try {
         const data = new FormData();
         data.append('name', this.form.name);
         data.append('description', this.form.description);
         data.append('barnTypeId', this.selectedType.id);
         data.append('locationId', this.selectedLocation.id);
-        data.append('cameraId', this.selectedCamera.id);
+        data.append('cameraId', this.selectedCamera.id ?? "");
         if (this.form.image) data.append('image', this.form.image);
-        const response = await axiosPrivate.post('/api/barn-detail', data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+
+         storeApiPrivate.post('/api/barnDetails?api-version=1.0', data, {
+          headers: {'Content-Type': 'multipart/form-data'},
+        })
+             .then(response => {
+               if (response.data.statusCode === 200) {
+                 var message = this.isEditMode ? "" : "Tạo chuồng thành công";
+                 toastSuccess(message);
+               }
+             })
+             .catch(error => {
+               toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+                console.error('Error fetching barn details:', error);
+              })
+             .finally(() => {
+               this.isLoading = true;
+             });
 
         this.closeModal();
       } catch (error) {
@@ -185,7 +248,40 @@ export default {
         alert('Có lỗi xảy ra, vui lòng thử lại.');
       }
     },
+    submitDataUpdate() {
+      this.isLoading = true;
+      try {
+        const data = {
+          name: this.form.name,
+          description: this.form.description,
+          barnTypeId: this.selectedType ? this.selectedType.id : '',
+          locationId: this.selectedLocation ? this.selectedLocation.id : '',
+          cameraId: this.selectedCamera ? this.selectedCamera.id : '',
+        }
 
+        storeApiPrivate.put(`/api/barnDetails/${this.id}?api-version=1.0`, data, {
+          headers: {"Content-Type": "application/json"},
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                var message = "Cập nhật chuồng thành công";
+                toastSuccess(message);
+              }
+            })
+            .catch(error => {
+              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+              console.error('Error fetching barn details:', error);
+            })
+            .finally(() => {
+              this.isLoading = true;
+            });
+
+        this.closeModal();
+      } catch (error) {
+        console.error('Error creating competition:', error);
+        alert('Có lỗi xảy ra, vui lòng thử lại.');
+      }
+    },
     closeModal() {
       this.resetForm();
       this.$emit('close');
@@ -196,17 +292,30 @@ export default {
     },
 
     resetForm() {
-      this.form = { name: '', description: '', dateStart: null, dateEnd: null, time: null, RegisterFee: null, image: null };
-      this.selectedStaffs = [];
-      this.selectedRewards = [];
-      this.rankGrid = [{ rankId: null, startDate: '', endDate: '' }];
+      this.form = {
+        name: '',
+        description: '',
+        dateStart: null,
+        dateEnd: null,
+        time: null,
+        RegisterFee: null,
+        image: null,
+      };
+      this.selectedLocation = '';
+      this.selectedCamera = '';
+      this.selectedType = '';
+      this.types = []
+      this.locations = []
+      this.cameras=  []
+      this.barn = null
     },
   },
 
   created() {
-    // this.fetchRewards('');
-    // this.fetchRanks('');
-    // this.fetchStaffs('');
+    if (this.barnId) {
+      this.isEditMode = true;
+      this.fetchBarnDetails(this.barnId);
+    }
   },
 };
 </script>
@@ -243,9 +352,8 @@ export default {
 .redo-icon,
 .close-icon {
   cursor: pointer;
-  font-size: 20px;
+  font-size: 30px;
   margin-left: 10px;
-  color: #007bff;
 }
 
 .form-title {

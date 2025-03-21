@@ -49,7 +49,6 @@
 
 <script>
 import { Chart, registerables } from 'chart.js';
-import { axiosPrivate } from '@/api/axios.js';
 
 // Đăng ký các thành phần biểu đồ
 Chart.register(...registerables);

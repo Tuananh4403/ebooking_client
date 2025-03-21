@@ -28,7 +28,7 @@ async function bootstrap() {
     store.dispatch('checkAuth');
     app.component('font-awesome-icon', FontAwesomeIcon);
     app.component('vue-multiselect', Multiselect);
-    app.component('vue-awesome-paginate', VueAwesomePaginate);
+    app.use(VueAwesomePaginate)
     app.component('vue-loading', Loading);
     app.use(router);
     app.use(store)
