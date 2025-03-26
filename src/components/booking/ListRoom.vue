@@ -5,11 +5,6 @@
                 <div class="room-card" @click="openModal(room)">
                     <img :src="imgs.hotel" alt="Room Image" class="room-image" />
 
-                    <div class="price-box">
-                        <div class="old-price">{{ room.oldPrice }} đ</div>
-                        <div class="new-price">{{ room.newPrice }} đ</div>
-                        <div class="discount">Giảm {{ room.discount }} đ</div>
-                    </div>
 
                     <div class="room-info">
                         <h3 class="room-name">{{ room.name }}</h3>
@@ -31,6 +26,8 @@
 <script>
 import ModalDetail from './modal/RoomDetail.vue';
 import imgs from '../../js/images';
+import {storeApiPrivate} from "@/api/axios.js";
+import {toastError} from "@/utils/toast.js";
 
 export default {
     components: {
@@ -83,7 +80,33 @@ export default {
         closeModal() {
             this.showModal = false;
             this.selectedRoom = null;
-        }
+        },
+      fetchBarn() {
+        this.loading = true;
+        storeApiPrivate.get('/api/BarnDetails?api-version=1.0', {
+          params: {
+            PageNumber: this.currentPage,
+            pageSize: this.pageSize,
+          }
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                const data = response.data.data;
+                this.barns = data.data;
+                this.totalCount = data.totalRecords;
+                this.pageSize = data.pageSize;
+              } else {
+                console.error('Dữ liệu API không đúng định dạng:', response.data);
+              }
+            })
+            .catch(error => {
+              toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
+              console.error(error);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+      },
     }
 };
 </script>

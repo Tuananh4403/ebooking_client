@@ -1,7 +1,7 @@
 <template>
   <div class="content ">
     <div class="title-search-container">
-      <h1 class="title">DANH SÁCH CAMERA</h1>
+      <h1 class="title">DANH SÁCH VỊ TRÍ</h1>
       <button class="search-button" @click="openSearchModal">Tìm kiếm</button>
       <button class="search-button" @click="openModal">Tạo</button>
     </div>
@@ -15,19 +15,23 @@
           <th>STT</th>
           <th>Tên</th>
           <th>Mô tả</th>
+          <th>URL Camera</th>
+          <th>Trạng thái</th>
           <th>Ngày tạo</th>
           <th></th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(location, index) in locations" :key="index">
+        <tr v-for="(camera, index) in cameras" :key="index">
           <td>{{ index + 1 }}</td>
-          <td>{{ location.name }}</td>
-          <td>{{ location.description ?? '' }}</td>
-          <td>{{ location.createdTime != null ? formatDate(location.createdTime) : '' }}</td>
+          <td>{{ camera.name }}</td>
+          <td>{{ camera.description ?? '' }}</td>
+          <td>{{ camera.videoUrl ?? '' }}</td>
+          <td>{{ formatCameraStatus(camera.status) ?? '' }}</td>
+          <td>{{ camera.createdTime != null ? formatDate(camera.createdTime) : '' }}</td>
           <td>
-            <button class="edit-button" @click="openEditModal(location.id)">Chỉnh sửa</button>
-            <button class="delete-button" @click="openEditModal(location.id)">Xóa</button>
+            <button class="edit-button" @click="openEditModal(camera.id)">Chỉnh sửa</button>
+            <button class="delete-button" @click="openEditModal(camera.id)">Xóa</button>
           </td>
         </tr>
         </tbody>
@@ -42,7 +46,7 @@
       </div>
     </div>
 
-    <AddUpdateLocation
+    <AddUpdateCamera
         v-if="showModal"
         :location-id="isCreating ? null : selectedCompetitionId"
         @close="closeModal"
@@ -52,20 +56,22 @@
 
 
 <script>
-import AddUpdateLocation from "@/components/admin/component/add-update-location.vue";
+import AddUpdateCamera from "@/components/admin/component/add-update-camera.vue";
 import {storeApiPrivate} from '@/api/axios.js';
 import {toastError, toastWarning} from "@/utils/toast.js";
+import {formatCameraStatus} from "@/constants/camera-status.js"
+import {formatBarnStatus} from "@/constants/barn-status.js";
 
 export default {
   name: 'ListBarn',
   components: {
-    AddUpdateLocation,
+    AddUpdateCamera,
   },
   data() {
     return {
       showModal: false,
       showSearchModal: false,
-      locations: [],
+      cameras: [],
       selectedCompetitionId: null,
       isCreating: false,
       currentPage: 1,
@@ -83,9 +89,9 @@ export default {
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
     },
-    fetchLocation() {
+    fetchCamera() {
       this.loading = true;
-      storeApiPrivate.get('/api/location?api-version=1.0', {
+      storeApiPrivate.get('/api/camera?api-version=1.0', {
         params: {
           PageNumber: this.currentPage,
           pageSize: this.pageSize,
@@ -94,7 +100,7 @@ export default {
           .then(response => {
             if (response.data.statusCode === 200) {
               const data = response.data.data;
-              this.locations = data.data;
+              this.cameras = data.data;
               this.totalCount = data.totalRecords;
               this.pageSize = data.pageSize;
             } else {
@@ -109,9 +115,9 @@ export default {
             this.loading = false;
           });
     },
-    async onPageChange(page) {
+    onPageChange(page) {
       this.currentPage = page;
-      await this.fetchBarn(); // Fetch data for the new page
+      this.fetchLocation(); // Fetch data for the new page
     },
     openModal() {
       this.isCreating = true; // Set to create mode
@@ -123,12 +129,14 @@ export default {
       this.selectedCompetitionId = barnId; // Store barn ID
       this.showModal = true;
     },
-
+    formatCameraStatus(status) {
+      return formatBarnStatus(status);
+    },
     closeModal() {
       this.showModal = false;
       this.selectedCompetitionId = null;
       this.isCreating = false;
-      this.fetchLocation();
+      this.fetchCamera();
 
     },
     openSearchModal() {
@@ -142,7 +150,7 @@ export default {
     },
   },
   mounted() {
-    this.fetchLocation();
+    this.fetchCamera();
   },
 };
 </script>

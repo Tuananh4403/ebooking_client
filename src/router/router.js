@@ -9,6 +9,7 @@ import AdminPage from "@/pages/AdminPage.vue";
 import dashboard from "@/components/admin/dashboard.vue";
 import listBarn from "@/components/admin/component/list-barn.vue";
 import listLocation from "@/components/admin/component/list-location.vue";
+import listCamera from "@/components/admin/component/list-camera.vue";
 const route = [
   {
     path: "/",
@@ -54,6 +55,10 @@ const route = [
       {
         path: "danh-sach-vi-tri",
         component: listLocation,
+      },
+      {
+        path: "danh-sach-camera",
+        component: listCamera,
       },
     ],
   },

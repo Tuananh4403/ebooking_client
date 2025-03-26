@@ -109,9 +109,9 @@ export default {
             this.loading = false;
           });
     },
-    async onPageChange(page) {
+    onPageChange(page) {
       this.currentPage = page;
-      await this.fetchBarn(); // Fetch data for the new page
+      this.fetchLocation(); // Fetch data for the new page
     },
     openModal() {
       this.isCreating = true; // Set to create mode

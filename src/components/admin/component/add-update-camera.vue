@@ -9,15 +9,15 @@
           <font-awesome-icon :icon="['fas', 'times-circle']"/>
         </div>
       </div>
-      <h2 v-if="locationId != null" class="form-title">Cập Nhật Vị Trí Chuồng</h2>
-      <h2 v-else class="form-title">Tạo Vị Trí Chuồng Mới</h2>
+      <h2 v-if="locationId != null" class="form-title">Cập Nhật Camera</h2>
+      <h2 v-else class="form-title">Tạo Camera Mới</h2>
 
       <form >
         <div class="form-group-row">
           <div class="form-group">
-            <label for="name">Nhập tên chuồng:<span class="required">*</span></label>
+            <label for="name">Nhập tên camera:<span class="required">*</span></label>
             <input type="text" id="name" v-model="name" :disabled="isLoading" required
-                   placeholder="Vui lòng nhập tên vị trí chuồng... ">
+                   placeholder="Vui lòng nhập tên camera... ">
           </div>
 
         </div>
@@ -26,6 +26,13 @@
             <label for="description">Mô tả:<span class="required">*</span></label>
             <input type="text" id="description" v-model="description" :disabled="isLoading" required
                    placeholder="Vui lòng nhập mô tả...">
+          </div>
+        </div>
+        <div class="form-group-row">
+          <div class="form-group">
+            <label for="description">Camera url:<span class="required">*</span></label>
+            <input type="text" id="description" v-model="videoUrl" :disabled="isLoading" required
+                   placeholder="Vui lòng nhập camera url...">
           </div>
         </div>
         <!-- Submit Button -->
@@ -47,7 +54,7 @@ import {storeApiPrivate} from '@/api/axios.js';
 import {toastError, toastSuccess, toastWarning} from "@/utils/toast.js";
 
 export default {
-  name: 'AddUpdateLocation',
+  name: 'AddUpdateCamera',
   props: {
     locationId: { // Receive barn ID for editing
       type: String,
@@ -58,22 +65,22 @@ export default {
     return {
       name: '',
       description: '',
+      videoUrl: '',
       isEditMode: false,
       isLoading: false,
-      location: null,
+      camera: null,
     };
   },
   methods: {
     fetchLocationDetails(id) {
       try {
-        console.log("test")
-        storeApiPrivate.get(`/api/location/${id}?api-version=1.0`)
+        storeApiPrivate.get(`/api/camera/${id}?api-version=1.0`)
             .then(response => {
               if (response.data.statusCode === 200) {
-                this.location = response.data.data;
-                this.name =  this.location.name;
-                this.description =  this.location.description;
-
+                this.camera = response.data.data;
+                this.name =  this.camera.name;
+                this.description =  this.camera.description;
+                this.videoUrl =  this.camera.videoUrl;
               }
             });
       } catch (error) {
@@ -86,9 +93,10 @@ export default {
         const data ={
           name: this.name,
           description: this.description,
+          videoUrl: this.videoUrl,
         }
 
-        storeApiPrivate.post('/api/location?api-version=1.0', data)
+        storeApiPrivate.post('/api/camera?api-version=1.0', data)
             .then(response => {
               if (response.data.statusCode === 200) {
                 var message = this.isEditMode ? "" : "Tạo chuồng thành công";
@@ -115,8 +123,9 @@ export default {
         const data = {
           name: this.name,
           description: this.description,
+          videoUrl: this.videoUrl,
         }
-        storeApiPrivate.put(`/api/location?id=${this.location.id}&api-version=1.0`, data, {
+        storeApiPrivate.put(`/api/camera?id=${this.location.id}&api-version=1.0`, data, {
           headers: {"Content-Type": "application/json"},
         })
             .then(response => {
