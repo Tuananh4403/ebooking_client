@@ -12,6 +12,9 @@
                         <th>STT</th>
                         <th>Mã đơn hàng</th>
                         <th>Tên khách hàng</th>
+                        <th>Tên thú cưng</th>
+                        <th>Tên chuồng lưu trú</th>
+                        <th>Ngày checkin</th>
                         <th>Trạng thái đơn hàng</th>
                         <th></th>
                     </tr>
@@ -19,9 +22,12 @@
                 <tbody>
                     <tr v-for="(order, index) in orders" :key="index">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ order.name }}</td>
-                        <td>{{ order.description ?? '' }}</td>
-                        <td>{{ order.status }}</td>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.customerName ?? '' }}</td>
+                        <td>{{ order.petName ?? '' }}</td>
+                      <td>{{ order.barnName ?? '' }}</td>
+                      <td>{{ formatDate(order.checkInDate) ?? '' }}</td>
+                      <td>{{ formatBookingStatus(order.status) ?? '' }}</td>
                         <td>
                             <button class="edit-button" @click="openModal">Checkin</button>
                             <button class="delete-button" @click="checkOut(camera.id)">Checkout</button>
@@ -42,8 +48,10 @@
 
 <script>
 import Checkin from "@/components/admin/component/checkin.vue";
-import { storeApiPrivate } from '@/api/axios.js';
+import {bookingApiPrivate, storeApiPrivate} from '@/api/axios.js';
 import { toastError, toastWarning } from "@/utils/toast.js";
+import {getUserId} from "@/utils/auth.js";
+import {formatBookingStatus} from "@/constants/booking-status.js";
 
 export default {
     name: "ListBarn",
@@ -64,39 +72,44 @@ export default {
         };
     },
     methods: {
-        fetchOrders() {
-            this.loading = true;
-            setTimeout(() => {
-                this.orders = [
-                    {
-                        id: 1,
-                        name: "DH001",
-                        description: "Nguyễn Văn A",
-                        status: "Đang xử lý",
-                        createdTime: "2025-03-28T10:00:00Z",
-                    },
-                    {
-                        id: 2,
-                        name: "DH002",
-                        description: "Trần Thị B",
-                        status: "Hoàn thành",
-                        createdTime: "2025-03-27T15:30:00Z",
-                    },
-                    {
-                        id: 3,
-                        name: "DH003",
-                        description: "Lê Văn C",
-                        status: "Đã hủy",
-                        createdTime: "2025-03-26T12:45:00Z",
-                    },
-                ];
-                this.totalCount = this.orders.length;
-                this.loading = false;
-            }, 1000);
-        },
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+      formatBookingStatus(status){
+        return formatBookingStatus(status);
+      },
+      fetchBooking() {
+        bookingApiPrivate.get(`/api/booking?api-version=1.0`,
+            {
+              params: {
+                PageNumber: this.currentPage,
+                pageSize: this.pageSize,
+              }
+            })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                var data = response.data.data;
+                this.orders =data.data;
+                this.totalCount = data.totalRecords;
+                this.pageSize = data.pageSize;
+              }
+            })
+            .catch(error => {
+              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+              console.error('Error fetching barn details:', error);
+            })
+            .finally(() => {
+              this.isLoading = true;
+            });
+      },
         onPageChange(page) {
             this.currentPage = page;
-            this.fetchOrders();
+            this.fetchBooking();
         },
         openModal() {
             this.showModal = true;
@@ -111,7 +124,7 @@ export default {
         },
     },
     mounted() {
-        this.fetchOrders();
+        this.fetchBooking();
     },
 };
 </script>

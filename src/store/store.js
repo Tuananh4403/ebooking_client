@@ -78,7 +78,7 @@ export default createStore({
     },
     refreshAccessToken({ commit, state }) {
       try {
-        apiClient.post('/api/auth/refresh-token?api-version=1.0', {
+        apiClient.post('/api/account/refresh-token?api-version=1.0', {
           refreshToken: state.token.refreshToken
         })
         .then((response) => {

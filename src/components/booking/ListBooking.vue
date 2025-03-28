@@ -1,4 +1,4 @@
-<!-- index.vue -->
+<!-- list-pet.vue -->
 <template>
     <div class="container">
         <div class="row">
