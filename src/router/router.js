@@ -12,6 +12,7 @@ import listLocation from "@/components/admin/component/list-location.vue";
 import listCamera from "@/components/admin/component/list-camera.vue";
 import ListService from "@/components/admin/component/list-service.vue";
 import ListBookingOrder from "@/components/admin/component/list-booking-order.vue"
+import HistoryTransaction from "@/components/customer/history-page.vue"
 const route = [
   {
     path: "/",
@@ -42,6 +43,11 @@ const route = [
         path: '/list-booking',
         name: 'ListBooking',
         component: ListBooking
+      },
+      {
+        path: '/history-transaction',
+        name: 'HistoryTransaction',
+        component: HistoryTransaction
       },
     ],
   },

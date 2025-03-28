@@ -27,15 +27,14 @@
                     <li><router-link to="/list-booking">Phòng đã đặt</router-link></li>
                   </ul>
                 </li>
-                <li class="has-children"><router-link to="shop-vendor-list.html">Thanh toán</router-link>
-                  <ul class="sub-menu">
-                    <li><router-link to="shop-vendor-list.html">Lịch sử giao dịch</router-link></li>
-                  </ul>
-                </li>
                 <li class="has-children"><router-link to="#">Thú cưng</router-link>
                   <ul class="sub-menu">
                     <li><router-link to="/pet">Thú cưng của tôi</router-link></li>
-                    <li><router-link to="page-contact.html">Theo dõi thú cưng</router-link></li>
+                  </ul>
+                </li>
+                <li class="has-children"><router-link to="shop-vendor-list.html">Thanh toán</router-link>
+                  <ul class="sub-menu">
+                    <li><router-link to="/history-transaction">Lịch sử giao dịch</router-link></li>
                   </ul>
                 </li>
               </ul>
