@@ -4,7 +4,12 @@
             <button class="close-btn" @click="closeModal">&times;</button>
 
             <h3 class="modal-title">Thông tin thú cưng</h3>
-            <img :src="imgs.meo" alt="Pet" class="img-fluid pet-image" />
+            <div class="image-container">
+                <img :src="imgs.meo" alt="Pet" class="img-fluid pet-image" />
+                <button class="plus-btn" @click="openVideoModal">
+                    <font-awesome-icon :icon="['fas', 'plus']" />
+                </button>
+            </div>
 
             <div class="modal-body">
                 <div class="form-group">
@@ -42,21 +47,29 @@
             </div>
         </div>
     </div>
+    <Teleport to="body">
+        <FollowPet v-if="showFollowPet" @close="showFollowPet = false" />
+    </Teleport>
 </template>
 
 <script>
 import imgs from '../../js/images';
+import FollowPet from './follow-pet.vue';
 export default {
     props: ['pet'],
+    components: {
+        FollowPet
+    },
     data() {
         return {
             imgs,
+            showFollowPet: false,
             errors: {
               name: '',
               birthday: '',
               gender: '',
               type: ''
-            }
+            },
         };
     },
   computed: {
@@ -101,6 +114,9 @@ export default {
         deletePet() {
             console.log("Xóa thú cưng", this.pet);
             this.$emit("close");
+        },
+        openVideoModal() {
+            this.showFollowPet = true;
         }
     }
 };
@@ -241,4 +257,35 @@ button:hover {
 .button-group .btn-danger:hover {
     background-color: rgb(186, 184, 184);
 }
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+.plus-btn {
+    position: absolute;
+    top: 2px;
+    right: 36%;
+    background: none;
+    border: none;
+    color: #425A8B;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plus-btn:hover {
+    color: black;
+}
+
+.pet-image {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    border-radius: 50%;
+    display: block;
+}
+
 </style>
