@@ -9,7 +9,6 @@
       <font-awesome-icon :icon="['fas', item.icon]" class="icon"/>
       <span class="tooltip">{{ item.tooltip }}</span>
 
-      <!-- Submenu should be outside tooltip -->
       <div
           v-if="isExpanded && activeItem === item && item.submenu"
           class="submenu"
@@ -41,7 +40,6 @@ export default {
           tooltip: 'Quản lí nhân sự',
           submenu: [
             {name: 'Quản lí nhân viên', route: '/admin/register-staff-admin'},
-            {name: 'Quản lí ban giám khảo', route: '/admin/register-judge-admin'},
           ],
         },
         {
@@ -54,50 +52,10 @@ export default {
           ],
         },
         {
-          icon: 'wallet',
-          tooltip: 'Quản lí thu chi',
-          submenu: [
-            {name: 'Danh sách thu chi'},
-            {name: 'Lịch sử nhà tài trợ'},
-            {name: 'Danh sách trao giải thưởng', route: '/admin/list-reward-admin'},
-          ],
-        },
-        {
           icon: 'bars',
-          tooltip: 'Danh sách đăng kí',
+          tooltip: 'Danh sách đơn hàng',
           submenu: [
-            {name: 'Danh sách đăng kí cá Koi', route: '/list-koi-fish-admin'},
-            {name: 'Danh sách cá Koi', route: '/admin/koi-fish-admin'},
-            {name: 'Danh sách đăng kí cuộc thi', route: '/admin/list-register-competition-admin'},
-
-          ],
-        },
-        {
-          icon: 'map',
-          tooltip: 'Quản lí điểm cuộc thi',
-          submenu: [
-            {name: 'Chi tiết điểm cuộc thi', route: '/admin/list-detail-score-admin'},
-            {name: 'Thống kê kết quả cuộc thi', route: '/admin/list-result-competition'},
-          ],
-        },
-        {
-          icon: 'list',
-          tooltip: 'Phân loại',
-          submenu: [{name: 'Danh sách phân loại cá Koi', route: '/admin/separate-koi-fish'}]
-        },
-        {
-          icon: 'pen', tooltip: 'Chấm thi', submenu: [{name: 'Chi tiết chấm thi', route: '/admin/score-detail'},
-            {name: 'Lịch sử chấm thi', route: '/history-score-detail'},
-            {name: 'Danh sách vòng thi', route: '/admin/list-detail-score-admin'}
-          ]
-        },
-        {
-          icon: 'calendar',
-          tooltip: 'Lịch chấm thi',
-          submenu: [
-            {name: 'Phân công lịch chấm thi', route: '/admin/schedule-admin'},
-            {name: 'Lịch chấm thi', route: '/admin/list-schedule'},
-            {name: 'Check-in', route: '/admin/check-in'},
+            {name: 'Danh sách đơn hàng', route: '/admin/danh-sach-don-hang'},
           ],
         },
         {

@@ -65,12 +65,9 @@ export const isTokenExpired = (token) => {
 };
 
 export const getToken = () => {
-  if(Cookies.get(accessTokenKey))
-  {
-    return JSON.parse(Cookies.get(accessTokenKey));
-  }
-  return null
-}
+  return Cookies.get(accessTokenKey) || null;
+};
+
 
 export const getUserId = () => {
   const id = Cookies.get(userId);

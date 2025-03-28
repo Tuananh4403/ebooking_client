@@ -11,6 +11,7 @@ import listBarn from "@/components/admin/component/list-barn.vue";
 import listLocation from "@/components/admin/component/list-location.vue";
 import listCamera from "@/components/admin/component/list-camera.vue";
 import ListService from "@/components/admin/component/list-service.vue";
+import ListBookingOrder from "@/components/admin/component/list-booking-order.vue"
 const route = [
   {
     path: "/",
@@ -64,6 +65,10 @@ const route = [
       {
         path: "danh-sach-dich-vu",
         component: ListService,
+      },
+      {
+        path: "danh-sach-don-hang",
+        component: ListBookingOrder,
       },
     ],
   },
