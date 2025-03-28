@@ -1,18 +1,18 @@
 <template>
     <div class="room-list">
         <div class="row">
-            <div class="col-md-4" v-for="room in rooms" :key="room.id">
+            <div v-if="barns.length > 0" class="col-md-4" v-for="room in barns" :key="room.id">
                 <div class="room-card" @click="openModal(room)">
                     <img :src="imgs.hotel" alt="Room Image" class="room-image" />
 
 
                     <div class="room-info">
                         <h3 class="room-name">{{ room.name }}</h3>
-                        <p class="room-location">Vị trí: {{ room.location }}</p>
-                        <div class="room-rating">
-                            <span>Điểm đánh giá: {{ room.rating }} - Tổng số đánh giá: {{ room.reviewsCount }}</span>
-                        </div>
-                        <p class="room-status">Trạng thái: {{ room.status }}</p>
+                        <p class="room-location">Vị trí: {{ room.locationResponse != null ? room.locationResponse.description : '' }}</p>
+<!--                        <div class="room-rating">-->
+<!--                            <span>Điểm đánh giá: {{ room.rating }} - Tổng số đánh giá: {{ room.reviewsCount }}</span>-->
+<!--                        </div>-->
+                        <p class="room-status">Trạng thái: {{formatBarnStatus(room.status)  }}</p>
                         <button class="book-now-btn">Đặt ngay</button>
                     </div>
                 </div>
@@ -28,6 +28,8 @@ import ModalDetail from './modal/RoomDetail.vue';
 import imgs from '../../js/images';
 import {storeApiPrivate} from "@/api/axios.js";
 import {toastError} from "@/utils/toast.js";
+import {formatBarnStatus} from "@/constants/barn-status.js"
+
 
 export default {
     components: {
@@ -69,7 +71,9 @@ export default {
             ],
             selectedRoom: null,
             showModal: false,
-            imgs
+            imgs,
+          loading: false,
+          barns: []
         };
     },
     methods: {
@@ -87,6 +91,7 @@ export default {
           params: {
             PageNumber: this.currentPage,
             pageSize: this.pageSize,
+            status: 2
           }
         })
             .then(response => {
@@ -107,7 +112,13 @@ export default {
               this.loading = false;
             });
       },
-    }
+      formatBarnStatus(status) {
+          return formatBarnStatus(status);
+      }
+    },
+  created(){
+    this.fetchBarn();
+  }
 };
 </script>
 

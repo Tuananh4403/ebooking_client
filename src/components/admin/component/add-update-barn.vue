@@ -279,7 +279,6 @@ export default {
         this.closeModal();
       } catch (error) {
         console.error('Error creating competition:', error);
-        alert('Có lỗi xảy ra, vui lòng thử lại.');
       }
     },
     closeModal() {

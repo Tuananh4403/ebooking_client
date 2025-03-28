@@ -22,6 +22,10 @@ import VueAwesomePaginate from "vue-awesome-paginate";
 import "vue-awesome-paginate/dist/style.css";
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
+import { numberFormat } from "@/directives/NumberFormatDirective"
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
 async function bootstrap() {
     const app = createApp(App)
     library.add(fas, far, fab,faAngleRight, faAngleLeft,faUser);
@@ -30,6 +34,8 @@ async function bootstrap() {
     app.component('vue-multiselect', Multiselect);
     app.use(VueAwesomePaginate)
     app.component('vue-loading', Loading);
+    app.component('vue-date-picker', VueDatePicker);
+    app.directive('number-format', numberFormat);
     app.use(router);
     app.use(store)
     app.mount('#app')

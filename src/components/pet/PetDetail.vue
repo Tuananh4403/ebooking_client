@@ -10,18 +10,30 @@
                 <div class="form-group">
                     <label>Tên:</label>
                     <input v-model="pet.name" type="text" />
+                  <p v-if="errors.name" class="text-danger text-italic">{{ errors.name }}</p>
                 </div>
                 <div class="form-group">
-                    <label>Tuổi:</label>
-                    <input v-model="pet.age" type="number" />
+                  <label for="petAge">Ngày  sinh <span class="note">*</span></label>
+                  <input type="date" id="petAge" v-model="pet.birthday" class="form-control" required />
+                  <p v-if="errors.birthday" class="text-danger text-italic">{{ errors.birthday }}</p>
                 </div>
                 <div class="form-group">
-                    <label>Giới tính:</label>
-                    <input v-model="pet.gender" type="text" />
+                  <label for="petGender">Giới tính <span class="note">*</span></label>
+                  <select id="petGender" v-model="pet.gender" class="form-control" required>
+                    <option value="">Chọn giới tính</option>
+                    <option value="true">Đực</option>
+                    <option value="false">Cái</option>
+                  </select>
+                  <p v-if="errors.gender" class="text-danger text-italic">{{ errors.gender }}</p>
                 </div>
                 <div class="form-group">
-                    <label>Giống loài:</label>
-                    <input v-model="pet.kind" type="text" />
+                  <label for="petKind">Giống loài <span class="note">*</span></label>
+                  <select id="petKind" v-model="pet.type" class="form-control" required>
+                    <option value="">Chọn Giống</option>
+                    <option value="dog">Chó</option>
+                    <option value=" cat"> Mèo</option>
+                  </select>
+                  <p v-if="errors.type" class="text-danger text-italic">{{ errors.type }}</p>
                 </div>
                 <div class="button-group">
                     <button @click="updatePet" class="btn btn-primary">Cập nhật</button>
@@ -39,14 +51,52 @@ export default {
     data() {
         return {
             imgs,
+            errors: {
+              name: '',
+              birthday: '',
+              gender: '',
+              type: ''
+            }
         };
     },
+  computed: {
+  },
     methods: {
+      validateForm() {
+        this.errors = {};
+
+        let isValid = true;
+
+        if (!this.pet.name) {
+          this.errors.name = 'Vui lòng không để trống tên thú cưng';
+          isValid = false;
+        }
+        if (!this.pet.birthday) {
+          this.errors.birthday = 'Vui lòng chọn ngày sinh';
+          isValid = false;
+        } else if (new Date(this.pet.birthday) > new Date()) {
+          this.errors.birthday = 'Vui lòng chọn ngày sinh bé hơn ngày hiện tại';
+          isValid = false;
+        }
+        if (!this.pet.gender) {
+          this.errors.gender = 'Vui lòng chọn giới tính';
+          isValid = false;
+        }
+        if (!this.pet.type) {
+          this.errors.type = 'Vui lòng không để trống giống loài';
+          isValid = false;
+        }
+
+        return isValid;
+      },
         closeModal() {
             this.$emit("close");
         },
         updatePet() {
-            console.log("Cập nhật thú cưng", this.pet);
+        if(this.validateForm())
+        {
+
+        }
         },
         deletePet() {
             console.log("Xóa thú cưng", this.pet);

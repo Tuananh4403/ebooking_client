@@ -10,6 +10,7 @@ import dashboard from "@/components/admin/dashboard.vue";
 import listBarn from "@/components/admin/component/list-barn.vue";
 import listLocation from "@/components/admin/component/list-location.vue";
 import listCamera from "@/components/admin/component/list-camera.vue";
+import ListService from "@/components/admin/component/list-service.vue";
 const route = [
   {
     path: "/",
@@ -59,6 +60,10 @@ const route = [
       {
         path: "danh-sach-camera",
         component: listCamera,
+      },
+      {
+        path: "danh-sach-dich-vu",
+        component: ListService,
       },
     ],
   },

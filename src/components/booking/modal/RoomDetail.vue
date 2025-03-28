@@ -10,10 +10,10 @@
                 <h3>{{ selectedRoom.name }}</h3>
 
                 <div class="modal-section">
-                    <h4>Ưu đãi hôm nay</h4>
-                    <div class="price-info">
-                        <div class="discount">Giảm {{ selectedRoom.discount }} đ</div>
-                    </div>
+<!--                    <h4>Ưu đãi hôm nay</h4>-->
+<!--                    <div class="price-info">-->
+<!--                        <div class="discount">Giảm {{ selectedRoom.discount }} đ</div>-->
+<!--                    </div>-->
                 </div>
 
                 <div class="modal-section">
@@ -28,10 +28,7 @@
                 <div class="modal-section">
                     <h4>Dịch vụ</h4>
                     <ul>
-                        <li>Miễn phí thức ăn 2 bữa/1 ngày</li>
-                        <li>Đưa đón miễn phí bán kính 7km</li>
-                        <li>Lễ tân 24 giờ</li>
-                        <li>Tặng 1 lần spa miễn phí khi lưu trú trên 5 ngày</li>
+                        <li v-for="service in listService" :key="service.id">{{service.description}}</li>
                     </ul>
                 </div>
 
@@ -40,39 +37,33 @@
                     <p>Điểm đánh giá trung bình: {{ selectedRoom.rating }} - Tổng số nhận xét: {{
                         selectedRoom.reviewsCount }}</p>
                     <div class="reviews">
-                        <div v-for="review in selectedRoom.reviews" :key="review.id" class="review-box">
-                            <p>{{ review.feedback }}</p>
-                            <span>- {{ review.username }}</span>
+                        <div v-for="review in listFeedBack" :key="review.id" class="review-box">
+                            <p>{{ review.Content }}</p>
+                            <span>- {{ review.CustomerName }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-section">
                     <h4>Mô tả phòng</h4>
-                    <p>Bàn lễ tân luôn hoạt động 24 giờ và sẵn sàng đưa rước miễn phí trong bán kính 7km, vì vậy quý
-                        khách có thể liên lạc với khách sạn để được hỗ trợ tốt nhất. Với sự tiện lợi khi có thể quan sát
-                        "boss yêu" từ xa bất kỳ lúc nào mang đến cảm giác an tâm cho các "sen" đi công tác xa.</p>
+                    <p>{{selectedRoom.description}}</p>
                 </div>
-
-                <div class="modal-section">
-                    <h4>Một số thông tin</h4>
-                    <ul>
-                        <li>Thời gian nhận phòng: 14:00</li>
-                        <li>Thời gian trả phòng: 12:00</li>
-                        <li>Đưa rước: miễn phí bán kính dưới 7km</li>
-                        <li>Phí đưa đón quá bán kính quy định: 20.000 đ/km</li>
-                        <li>Quy định phòng: Số lượng thú cưng tối đa 1 phòng: 2</li>
-                    </ul>
+              <div class="modal-section row">
+                <div class="col-6" >
+                  <label>Ngày nhận phòng:</label>
+                  <vue-date-picker v-model="checkIn" :min-date="new Date()" :enable-time-picker="false"/>
                 </div>
-
+                <div class="col-6" >
+                  <label>Ngày trả phòng:</label>
+                  <vue-date-picker v-model="checkOut" :min-date="checkIn" :enable-time-picker="false"/>
+                </div>
+              </div>
                 <div class="modal-section">
-                    <h4>Giá phòng hôm nay</h4>
                     <div class="price-info">
-                        <div class="old-price">{{ selectedRoom.oldPrice }} đ</div>
-                        <div class="new-price">{{ selectedRoom.newPrice }} đ</div>
-                        <button class="book-now-btn" @click="openBookingModal">Đặt ngay</button>
+                        <button class="book-now-btn" @click="openBookingModal()">Đặt ngay</button>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -84,6 +75,9 @@
 <script>
 import imgs from '../../../js/images';
 import BookingModal from './Booking.vue'
+import {bookingApiPrivate, customerApiPrivate, storeApiPrivate} from "@/api/axios.js";
+import {toastError} from "@/utils/toast.js";
+import {getUserId} from "@/utils/auth.js";
 export default {
     components: {
         BookingModal
@@ -92,11 +86,13 @@ export default {
         return {
             imgs,
             showBookingModal: false,
-            pets: [
-                { id: 1, name: "Chó Poodle" },
-                { id: 2, name: "Mèo Maine Coon" },
-                { id: 3, name: "Chó Labrador" }
-            ],
+            pets: [],
+          listService:[],
+          listFeedBack:[],
+          pageSize:5,
+          currentPage: 1,
+          checkIn: '',
+          checkOut: '',
         }
     },
     props: {
@@ -114,12 +110,97 @@ export default {
             this.$emit('close-modal');
         },
         openBookingModal() {
+              this.fetchPet();
             this.showBookingModal = true;
         },
         closeBookingModal() {
             this.showBookingModal = false;
-        }
-    }
+        },
+      fetchServices() {
+        this.loading = true;
+        storeApiPrivate.get('/api/Service?api-version=1.0', {
+          params: {
+            PageNumber: this.currentPage,
+            pageSize: this.pageSize,
+          }
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                const data = response.data.data;
+                this.listService = data.data;
+                this.totalCount = data.totalRecords;
+                this.pageSize = data.pageSize;
+              } else {
+                console.error('Dữ liệu API không đúng định dạng:', response.data);
+              }
+            })
+            .catch(error => {
+              toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
+              console.error(error);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+      },
+      fetchFeedBack() {
+        this.loading = true;
+        bookingApiPrivate.get('/api/feedback?api-version=1.0', {
+          params: {
+            barnId: this.selectedRoom.barnId,
+            PageNumber: this.currentPage,
+            pageSize: this.pageSize,
+          }
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                const data = response.data.data;
+                this.listFeedBack = data.data;
+                this.totalCount = data.totalRecords;
+                this.pageSize = data.pageSize;
+              } else {
+                console.error('Dữ liệu API không đúng định dạng:', response.data);
+              }
+            })
+            .catch(error => {
+              toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
+              console.error(error);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+      },
+      fetchPet(){
+        this.loading = true;
+        var userId = getUserId();
+        customerApiPrivate.get(`/api/${userId}/pets?api-version=1.0`, {
+          params: {
+            PageNumber: this.currentPage,
+            pageSize: this.pageSize,
+          }
+        })
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                const data = response.data.data;
+                this.pets = data.data;
+                this.totalCount = data.totalRecords;
+                this.pageSize = data.pageSize;
+              } else {
+                console.error('Dữ liệu API không đúng định dạng:', response.data);
+              }
+            })
+            .catch(error => {
+              toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
+              console.error(error);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+      }
+    },
+  created() {
+      this.fetchServices();
+      this.fetchFeedBack();
+  }
 };
 </script>
 

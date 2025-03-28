@@ -5,6 +5,7 @@ const services = {
     auth: import.meta.env.VITE_AUTH_SERVICE_URL,
     booking: import.meta.env.VITE_BOOKING_SERVICE_URL,
     store: import.meta.env.VITE_STORE_SERVICE_URL,
+    customer: import.meta.env.VITE_CUSTOMER_SERVICE_URL,
 };
 
 
@@ -13,7 +14,6 @@ const createPublicApi = (service) => {
     if (!baseURL) {
         throw new Error(`API base URL for ${service} is not defined`);
     }
-
     return axios.create({
         baseURL,
         headers: {
@@ -25,11 +25,9 @@ const createPublicApi = (service) => {
 // Function to create a private API instance (requires token)
 const createPrivateApi = (service) => {
     const instance = createPublicApi(service); // Start with the public config
-
-    // Add Authorization Header
     instance.interceptors.request.use(
         (config) => {
-            const token = getToken();
+            const token = getToken().accessToken;
             if (token) {
                 config.headers["Authorization"] = `Bearer ${token}`;
             }
@@ -63,3 +61,6 @@ export const bookingApiPrivate = createPrivateApi("booking");
 
 export const storeApiPublic = createPublicApi("store");
 export const storeApiPrivate = createPrivateApi("store");
+
+export const customerApiPublic = createPublicApi("customer");
+export const customerApiPrivate = createPrivateApi("customer");

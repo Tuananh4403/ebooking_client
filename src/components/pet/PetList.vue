@@ -4,9 +4,9 @@
             <div class="pet-box" @click="openModal(pet)">
                 <img :src="imgs.meo" alt="Pet" class="img-fluid" />
                 <h5>{{ pet.name }}</h5>
-                <p>Tuổi: {{ pet.age }}</p>
-                <p>Giới tính: {{ pet.gender }}</p>
-                <p>Giống loài: {{ pet.kind }}</p>
+                <p>Ngày sinh: {{ formatDate(pet.birthday) }}</p>
+                <p>Giới tính: {{ pet.gender ? 'Đực' : 'Cái'}}</p>
+                  <p>Loài: {{ pet.type == 'dog' ? 'Chó' : 'Mèo ' }}</p>
             </div>
         </div>
     </div>
@@ -32,6 +32,14 @@ export default {
         }
     },
     methods: {
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
         openModal(pet) {
             this.currentPet = { ...pet };
             this.showModal = true;

@@ -26,27 +26,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="petAge">Tuổi <span class="note">*</span></label>
-                    <input type="date" id="petAge" v-model="newPet.age" class="form-control" required />
-                    <p v-if="errors.age" class="text-danger text-italic">{{ errors.age }}</p>
+                    <label for="petAge">Ngày  sinh <span class="note">*</span></label>
+                    <input type="date" id="petAge" v-model="newPet.birthday" class="form-control" required />
+                    <p v-if="errors.birthday" class="text-danger text-italic">{{ errors.birthday }}</p>
                 </div>
 
                 <div class="form-group">
                     <label for="petGender">Giới tính <span class="note">*</span></label>
                     <select id="petGender" v-model="newPet.gender" class="form-control" required>
                         <option value="">Chọn giới tính</option>
-                        <option value="Đực">Đực</option>
-                        <option value="Cái">Cái</option>
-                        <option value="Khác">Khác</option>
+                        <option value="true">Đực</option>
+                        <option value="false">Cái</option>
                     </select>
                     <p v-if="errors.gender" class="text-danger text-italic">{{ errors.gender }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label for="petKind">Giống loài <span class="note">*</span></label>
-                    <input type="text" id="petKind" v-model="newPet.kind" class="form-control"
-                        placeholder="Vui lòng nhập giống loài" required />
-                    <p v-if="errors.kind" class="text-danger text-italic">{{ errors.kind }}</p>
+                  <label for="petKind">Giống loài <span class="note">*</span></label>
+                  <select id="petKind" v-model="newPet.type" class="form-control" required>
+                    <option value="">Chọn Giống</option>
+                      <option value="dog">Chó</option>
+                    <option value=" cat"> Mèo</option>
+                  </select>
+                    <p v-if="errors.type" class="text-danger text-italic">{{ errors.type }}</p>
                 </div>
 
                 <button @click="addPetHandler" class="btn btn-primary">Thêm mới</button>
@@ -61,17 +63,17 @@ export default {
         return {
             newPet: {
                 name: '',
-                age: '',
+              birthday: '',
                 gender: '',
-                kind: '',
+                type: '',
                 image: ''
             },
             petImage: '',
             errors: {
                 name: '',
-                age: '',
+              birthday: '',
                 gender: '',
-                kind: ''
+                type: ''
             }
         };
     },
@@ -95,8 +97,8 @@ export default {
                 this.errors.name = 'Vui lòng không để trống tên thú cưng';
                 isValid = false;
             }
-            if (!this.newPet.age) {
-                this.errors.age = 'Vui lòng chọn tuổi';
+            if (!this.newPet.birthday) {
+                this.errors.birthday = 'Vui lòng chọn ngày sinh';
                 isValid = false;
             } else if (new Date(this.newPet.age) > new Date()) {
                 this.errors.age = 'Vui lòng chọn ngày sinh bé hơn ngày hiện tại';
@@ -106,8 +108,8 @@ export default {
                 this.errors.gender = 'Vui lòng chọn giới tính';
                 isValid = false;
             }
-            if (!this.newPet.kind) {
-                this.errors.kind = 'Vui lòng không để trống giống loài';
+            if (!this.newPet.type) {
+                this.errors.type = 'Vui lòng không để trống giống loài';
                 isValid = false;
             }
 
@@ -115,8 +117,8 @@ export default {
         },
         addPetHandler() {
             if (this.validateForm()) {
-                this.$emit('add-pet', this.newPet);
-                this.newPet = { name: '', age: '', gender: '', kind: '', image: '' };
+                this.$emit('addPet', this.newPet);
+                this.newPet = { name: '', birthday: '', gender: '', type: '', image: '' };
                 this.petImage = '';
             }
         }
