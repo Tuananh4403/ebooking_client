@@ -9,7 +9,7 @@
                 <label for="pet-select">Thú cưng:</label>
                 <select v-model="selectedPet" id="pet-select" required>
                     <option disabled value="">Vui lòng chọn thú cưng của bạn</option>
-                    <option v-for="pet in pets" :key="pet.id" :value="pet.id">{{ pet.name }}</option>
+                    <option v-for="pet in pets" :key="pet.id" :value="pet">{{ pet.name }}</option>
                 </select>
             </div>
 
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import {toastWarning} from "@/utils/toast.js";
+
 export default {
     props: {
         pets: {
@@ -39,10 +41,11 @@ export default {
         },
         confirmBooking() {
             if (this.selectedPet) {
-                alert(`Đặt phòng thành công với thú cưng ID: ${this.selectedPet}`);
-                this.closeModal(); 
+              console.log(this.selectedPet);
+              this.$emit('submit', this.selectedPet);
+              this.closeModal()
             } else {
-                alert("Vui lòng chọn thú cưng của bạn.");
+                toastWarning("Vui lòng chọn thú cưng")
             }
         }
     }

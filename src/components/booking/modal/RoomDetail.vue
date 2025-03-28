@@ -25,12 +25,26 @@
                     </ul>
                 </div>
 
-                <div class="modal-section">
-                    <h4>Dịch vụ</h4>
-                    <ul>
-                        <li v-for="service in listService" :key="service.id">{{service.description}}</li>
-                    </ul>
-                </div>
+              <div class="modal-section">
+                <h4>Dịch vụ</h4>
+                <vue-multiselect
+                    v-model="selectedServices"
+                    :options="listService"
+                    :multiple="true"
+                    :close-on-select="false"
+                    :clear-on-select="false"
+                    label="description"
+                    track-by="id"
+                    placeholder="Chọn dịch vụ"
+                >
+                  <template v-slot:option="{ option }">
+                    <div class="service-option">
+                      <span>{{ option.description }}</span>
+
+                    </div>
+                  </template>
+                </vue-multiselect>
+              </div>
 
                 <div class="modal-section">
                     <h4>Bài đánh giá</h4>
@@ -50,11 +64,11 @@
                 </div>
               <div class="modal-section row">
                 <div class="col-6" >
-                  <label>Ngày nhận phòng:</label>
+                  <label>Ngày nhận:</label>
                   <vue-date-picker v-model="checkIn" :min-date="new Date()" :enable-time-picker="false"/>
                 </div>
                 <div class="col-6" >
-                  <label>Ngày trả phòng:</label>
+                  <label>Ngày trả:</label>
                   <vue-date-picker v-model="checkOut" :min-date="checkIn" :enable-time-picker="false"/>
                 </div>
               </div>
@@ -68,7 +82,7 @@
         </div>
     </div>
     <Teleport to="body">
-        <BookingModal v-if="showBookingModal" :pets="pets" @close-booking-modal="closeBookingModal" />
+        <BookingModal v-if="showBookingModal" :pets="pets" @close-booking-modal="closeBookingModal" @submit="submit" />
     </Teleport>
 </template>
 
@@ -76,7 +90,7 @@
 import imgs from '../../../js/images';
 import BookingModal from './Booking.vue'
 import {bookingApiPrivate, customerApiPrivate, storeApiPrivate} from "@/api/axios.js";
-import {toastError} from "@/utils/toast.js";
+import {toastError, toastSuccess, toastWarning} from "@/utils/toast.js";
 import {getUserId} from "@/utils/auth.js";
 export default {
     components: {
@@ -93,6 +107,7 @@ export default {
           currentPage: 1,
           checkIn: '',
           checkOut: '',
+          selectedServices: []
         }
     },
     props: {
@@ -104,6 +119,14 @@ export default {
             type: Boolean,
             required: true
         }
+    },
+    computed: {
+      selectedServiceIds() {
+        return this.selectedServices.map(service => ({
+          serviceId: service.id,
+          quantity: 1
+        }));
+      }
     },
     methods: {
         closeModal() {
@@ -195,6 +218,32 @@ export default {
             .finally(() => {
               this.loading = false;
             });
+      },
+      submit(selectedPet){
+        var data = {
+          petId: selectedPet.id,
+          petName: selectedPet.name,
+          checkinDate: this.checkIn,
+          checkoutDate: this.checkOut,
+          customerId: getUserId(),
+          BarnId: this.selectedRoom.barnId,
+          BarnName: this.selectedRoom.name,
+          BookingDetailRequest: this.selectedServiceIds
+        }
+        bookingApiPrivate.post(`/api/booking?api-version=1.0`, data)
+            .then(response => {
+              if (response.data.statusCode === 200) {
+                var message = this.isEditMode ? "" : "Bạn đã đặt phòng thành công vui lòng kiểm tra email để xác nhận";
+                toastSuccess(message);
+              }
+            })
+            .catch(error => {
+              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+              console.error('Error fetching barn details:', error);
+            })
+            .finally(() => {
+              this.isLoading = true;
+            });
       }
     },
   created() {
@@ -205,6 +254,7 @@ export default {
 </script>
 
 <style scoped>
+@import "vue-multiselect/dist/vue-multiselect.css";
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -346,5 +396,16 @@ export default {
 
 .price-info .book-now-btn:hover {
     background-color: #f77b00;
+}
+.service-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.quantity-input {
+  width: 50px;
+  margin-left: 10px;
 }
 </style>
