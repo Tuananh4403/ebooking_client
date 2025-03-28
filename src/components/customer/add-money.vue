@@ -3,13 +3,13 @@
         <div class="modal-content">
             <!-- Nút Close -->
             <button class="close-btn" @click="$emit('close')">&times;</button>
-            
+
             <!-- Tiêu đề -->
             <h2 class="modal-title">Nhập số tiền cần nạp</h2>
-            
+
             <!-- Input nhập số tiền -->
             <input type="number" v-model="amount" placeholder="Nhập số tiền" class="money-input" />
-            
+
             <!-- Nút Nạp tiền -->
             <button class="submit-btn" @click="confirmAddMoney">Nạp tiền</button>
         </div>
@@ -20,17 +20,17 @@
 export default {
     data() {
         return {
-            amountRaw: null // Giá trị thực lưu số tiền
+            amountRaw: null 
         };
     },
     computed: {
         amount: {
             get() {
                 if (this.amountRaw === null) return "";
-                return this.amountRaw.toLocaleString(); // Định dạng có dấu ","
+                return this.amountRaw.toLocaleString(); 
             },
             set(value) {
-                const numericValue = parseFloat(value.replace(/,/g, "")); // Loại bỏ dấu "," trước khi cập nhật
+                const numericValue = parseFloat(value.replace(/,/g, "")); 
                 this.amountRaw = isNaN(numericValue) ? null : numericValue;
             }
         }
@@ -66,7 +66,7 @@ export default {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 320px; /* Tăng kích thước modal */
+    width: 320px;
     position: relative;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -77,7 +77,8 @@ export default {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 10px;
-    text-align: left; /* Căn trái */
+    text-align: left;
+    /* Căn trái */
 }
 
 .money-input {
@@ -87,7 +88,7 @@ export default {
     border: 1px solid #ccc;
     border-radius: 4px;
     margin-bottom: 15px;
-    text-align: left; /* Căn trái */
+    text-align: left;
 }
 
 .submit-btn {
@@ -100,7 +101,7 @@ export default {
     cursor: pointer;
     transition: opacity 0.3s;
     width: auto;
-    align-self: flex-end; /* Căn phải */
+    align-self: flex-end;
 }
 
 
@@ -118,6 +119,7 @@ export default {
 .close-btn:hover {
     color: gray;
 }
+
 .submit-btn:hover {
     opacity: 0.8;
 }

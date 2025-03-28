@@ -59,18 +59,14 @@ export const saveUserRole = (roles) => {
 export const isTokenExpired = (token) => {
   if (!token) return true;
   const decodedToken = jwtDecode(token);
-  const currentTime = Date.now() / 1000; // Current time in seconds
+  const currentTime = Date.now() / 1000; 
 
-  return decodedToken.exp < currentTime; // Check if the token is expired
+  return decodedToken.exp < currentTime; 
 };
 
 export const getToken = () => {
-  if(Cookies.get(accessTokenKey))
-  {
-    return JSON.parse(Cookies.get(accessTokenKey));
-  }
-  return null
-}
+  return Cookies.get(accessTokenKey) || null;
+};
 
 
 export const getUserId = () => {

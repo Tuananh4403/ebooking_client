@@ -1,15 +1,12 @@
 <template>
     <div class="payment-container">
-        <!-- Header Section -->
         <div class="header">
             <font-awesome-icon :icon="['fas', 'wallet']" class="wallet-icon" @click="openModal" />
             <span class="total-amount">{{ totalAmount.toLocaleString() }} VND</span>
         </div>
 
-        <!-- Title -->
         <h2 class="page-title">Danh sách lịch sử giao dịch</h2>
 
-        <!-- Transaction Table -->
         <div class="table-container">
             <table>
                 <thead>
@@ -39,7 +36,7 @@
         </div>
     </div>
     <Teleport to="body">
-        <AddMoney v-if="isOpenModal" @close="closeModal"/>
+        <AddMoney v-if="isOpenModal" @close="closeModal" />
     </Teleport>
 </template>
 
@@ -115,7 +112,8 @@ table {
     text-align: center;
 }
 
-th, td {
+th,
+td {
     border: 1px solid #ddd;
     padding: 10px;
 }

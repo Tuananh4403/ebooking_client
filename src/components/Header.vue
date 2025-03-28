@@ -43,16 +43,12 @@
                 class="burger-icon-mid"></span><span class="burger-icon-bottom"></span></div>
           </div>
           <div class="header-shop">
-            <div class="d-inline-block box-dropdown-cart">
+            <div class="d-inline-block box-dropdown-cart" @click="toggleDropdown">
               <font-awesome-icon :icon="['fas', 'user']" />
               {{ fullName }}
-              <div class="dropdown-account">
-                <ul>
-                  <li>Đăng xuất</li>
-                </ul>
-              </div>
             </div>
           </div>
+
         </div>
 
       </div>
@@ -66,10 +62,16 @@ export default {
   components: {
     TopBar
   },
-  data(){
-    return{
+  data() {
+    return {
       fullName: getUserFullName(),
+      isDropdownVisible: false,
     }
+  },
+  methods: {
+    toggleDropdown() {
+      this.isDropdownVisible = !this.isDropdownVisible;
+    },
   }
 }
 </script>

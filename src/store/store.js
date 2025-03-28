@@ -31,12 +31,10 @@ export default createStore({
   },
   actions: {
     async login({ commit }, { email, password }) {
-        // Make the login API request
         const response = await apiClient.post('/api/account/login?api-version=1.0', { username: email, password });
         if (response.data.statusCode === 200) {
           const { userId, fullName, email, username, role, accessToken, refreshToken } = response.data.data;
           
-          // Construct the user object
           const user = { userId, fullName, email, username, role };
           
           commit('setUser', user);
@@ -47,8 +45,7 @@ export default createStore({
           });
   
           
-          // Save the token and user data to localStorage/sessionStorage
-          saveToken(accessToken, refreshToken); // Save token (you only need to call this once)
+          saveToken(accessToken, refreshToken);
           saveUserId(userId);
           saveUserFullName(fullName);
           saveUserName(username);
@@ -90,7 +87,7 @@ export default createStore({
             accessToken: accessToken,
             refreshToken: refreshToken,
           });
-          saveToken( accessToken , refreshToken); // Update localStorage with new token
+          saveToken( accessToken , refreshToken);
         });
       } catch (error) {
         console.error('Token refresh failed:', error);

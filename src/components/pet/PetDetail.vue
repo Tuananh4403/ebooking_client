@@ -15,30 +15,30 @@
                 <div class="form-group">
                     <label>Tên:</label>
                     <input v-model="pet.name" type="text" />
-                  <p v-if="errors.name" class="text-danger text-italic">{{ errors.name }}</p>
+                    <p v-if="errors.name" class="text-danger text-italic">{{ errors.name }}</p>
                 </div>
                 <div class="form-group">
-                  <label for="petAge">Ngày  sinh <span class="note">*</span></label>
-                  <input type="date" id="petAge" v-model="pet.birthday" class="form-control" required />
-                  <p v-if="errors.birthday" class="text-danger text-italic">{{ errors.birthday }}</p>
+                    <label for="petAge">Ngày sinh <span class="note">*</span></label>
+                    <input type="date" id="petAge" v-model="pet.birthday" class="form-control" required />
+                    <p v-if="errors.birthday" class="text-danger text-italic">{{ errors.birthday }}</p>
                 </div>
                 <div class="form-group">
-                  <label for="petGender">Giới tính <span class="note">*</span></label>
-                  <select id="petGender" v-model="pet.gender" class="form-control" required>
-                    <option value="">Chọn giới tính</option>
-                    <option value="true">Đực</option>
-                    <option value="false">Cái</option>
-                  </select>
-                  <p v-if="errors.gender" class="text-danger text-italic">{{ errors.gender }}</p>
+                    <label for="petGender">Giới tính <span class="note">*</span></label>
+                    <select id="petGender" v-model="pet.gender" class="form-control" required>
+                        <option value="">Chọn giới tính</option>
+                        <option value="true">Đực</option>
+                        <option value="false">Cái</option>
+                    </select>
+                    <p v-if="errors.gender" class="text-danger text-italic">{{ errors.gender }}</p>
                 </div>
                 <div class="form-group">
-                  <label for="petKind">Giống loài <span class="note">*</span></label>
-                  <select id="petKind" v-model="pet.type" class="form-control" required>
-                    <option value="">Chọn Giống</option>
-                    <option value="dog">Chó</option>
-                    <option value=" cat"> Mèo</option>
-                  </select>
-                  <p v-if="errors.type" class="text-danger text-italic">{{ errors.type }}</p>
+                    <label for="petKind">Giống loài <span class="note">*</span></label>
+                    <select id="petKind" v-model="pet.type" class="form-control" required>
+                        <option value="">Chọn Giống</option>
+                        <option value="dog">Chó</option>
+                        <option value=" cat"> Mèo</option>
+                    </select>
+                    <p v-if="errors.type" class="text-danger text-italic">{{ errors.type }}</p>
                 </div>
                 <div class="button-group">
                     <button @click="updatePet" class="btn btn-primary">Cập nhật</button>
@@ -65,51 +65,50 @@ export default {
             imgs,
             showFollowPet: false,
             errors: {
-              name: '',
-              birthday: '',
-              gender: '',
-              type: ''
+                name: '',
+                birthday: '',
+                gender: '',
+                type: ''
             },
         };
     },
-  computed: {
-  },
+    computed: {
+    },
     methods: {
-      validateForm() {
-        this.errors = {};
+        validateForm() {
+            this.errors = {};
 
-        let isValid = true;
+            let isValid = true;
 
-        if (!this.pet.name) {
-          this.errors.name = 'Vui lòng không để trống tên thú cưng';
-          isValid = false;
-        }
-        if (!this.pet.birthday) {
-          this.errors.birthday = 'Vui lòng chọn ngày sinh';
-          isValid = false;
-        } else if (new Date(this.pet.birthday) > new Date()) {
-          this.errors.birthday = 'Vui lòng chọn ngày sinh bé hơn ngày hiện tại';
-          isValid = false;
-        }
-        if (!this.pet.gender) {
-          this.errors.gender = 'Vui lòng chọn giới tính';
-          isValid = false;
-        }
-        if (!this.pet.type) {
-          this.errors.type = 'Vui lòng không để trống giống loài';
-          isValid = false;
-        }
+            if (!this.pet.name) {
+                this.errors.name = 'Vui lòng không để trống tên thú cưng';
+                isValid = false;
+            }
+            if (!this.pet.birthday) {
+                this.errors.birthday = 'Vui lòng chọn ngày sinh';
+                isValid = false;
+            } else if (new Date(this.pet.birthday) > new Date()) {
+                this.errors.birthday = 'Vui lòng chọn ngày sinh bé hơn ngày hiện tại';
+                isValid = false;
+            }
+            if (!this.pet.gender) {
+                this.errors.gender = 'Vui lòng chọn giới tính';
+                isValid = false;
+            }
+            if (!this.pet.type) {
+                this.errors.type = 'Vui lòng không để trống giống loài';
+                isValid = false;
+            }
 
-        return isValid;
-      },
+            return isValid;
+        },
         closeModal() {
             this.$emit("close");
         },
         updatePet() {
-        if(this.validateForm())
-        {
+            if (this.validateForm()) {
 
-        }
+            }
         },
         deletePet() {
             console.log("Xóa thú cưng", this.pet);
@@ -257,10 +256,12 @@ button:hover {
 .button-group .btn-danger:hover {
     background-color: rgb(186, 184, 184);
 }
+
 .image-container {
     position: relative;
     display: inline-block;
 }
+
 .plus-btn {
     position: absolute;
     top: 2px;
@@ -287,5 +288,4 @@ button:hover {
     border-radius: 50%;
     display: block;
 }
-
 </style>

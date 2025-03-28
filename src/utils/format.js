@@ -9,10 +9,8 @@ export function useCurrencyFormatter(locale = 'vi-VN', currency = 'VND') {
     return { format };
 }
 export function formatNumber(number, percentage = false) {
-    // Format as percentage
     if (percentage) {
         return (number * 100).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '%';
     }
-    // Format with thousands separator
     return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }

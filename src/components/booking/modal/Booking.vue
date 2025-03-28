@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {toastWarning} from "@/utils/toast.js";
+import { toastWarning } from "@/utils/toast.js";
 
 export default {
     props: {
@@ -41,9 +41,9 @@ export default {
         },
         confirmBooking() {
             if (this.selectedPet) {
-              console.log(this.selectedPet);
-              this.$emit('submit', this.selectedPet);
-              this.closeModal()
+                console.log(this.selectedPet);
+                this.$emit('submit', this.selectedPet);
+                this.closeModal()
             } else {
                 toastWarning("Vui lòng chọn thú cưng")
             }

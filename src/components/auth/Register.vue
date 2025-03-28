@@ -10,25 +10,25 @@
               <div class="form-group">
                 <label class="mb-2 font-sm color-gray-700">Họ và Tên <span class="note">*</span></label>
                 <input class="form-control" type="text" v-model="form.fullName" placeholder="Nguyễn Văn A"
-                       @input="validateField('fullName')">
+                  @input="validateField('fullName')">
                 <div v-if="errors.fullName" class="error-message">{{ errors.fullName }}</div>
               </div>
               <div class="form-group">
                 <label class="mb-2 font-sm color-gray-700">Email <span class="note">*</span></label>
                 <input class="form-control" type="text" v-model="form.email" placeholder="a@gmail.com"
-                       @input="validateField('email')">
+                  @input="validateField('email')">
                 <div v-if="errors.email" class="error-message">{{ errors.email }}</div>
               </div>
               <div class="form-group">
                 <label class="mb-2 font-sm color-gray-700">Số điện thoại <span class="note">*</span></label>
                 <input class="form-control" type="text" v-model="form.phone" placeholder="09********"
-                       @input="validateField('phone')">
+                  @input="validateField('phone')">
                 <div v-if="errors.phone" class="error-message">{{ errors.phone }}</div>
               </div>
               <div class="form-group">
                 <label class="mb-2 font-sm color-gray-700">Địa chỉ <span class="note">*</span></label>
                 <input class="form-control" type="text" v-model="form.address"
-                       placeholder="Đường A, Phường B, Thành phố C" @input="validateField('address')">
+                  placeholder="Đường A, Phường B, Thành phố C" @input="validateField('address')">
                 <div v-if="errors.address" class="error-message">{{ errors.address }}</div>
               </div>
               <div class="form-group">
@@ -48,13 +48,13 @@
               <div class="form-group">
                 <label class="mb-2 font-sm color-gray-700">Mật khẩu <span class="note">*</span></label>
                 <input class="form-control" type="password" v-model="form.password" placeholder="******************"
-                       @input="validateField('password')">
+                  @input="validateField('password')">
                 <div v-if="errors.password" class="error-message">{{ errors.password }}</div>
               </div>
               <div class="form-group">
                 <label class="mb-2 font-sm color-gray-700">Xác nhận mật khẩu <span class="note">*</span></label>
                 <input class="form-control" type="password" v-model="form.confirmPassword"
-                       placeholder="******************" @input="validateField('confirmPassword')">
+                  placeholder="******************" @input="validateField('confirmPassword')">
                 <div v-if="errors.confirmPassword" class="error-message">{{ errors.confirmPassword }}</div>
               </div>
               <div class="form-group">
@@ -72,11 +72,11 @@
               <h5 class="text-center">Tài khoản xã hội</h5>
               <div class="box-button-login mt-25">
                 <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<img :src="imgs.google"
-                                                                                            alt="Ecom"></a>
+                    alt="Ecom"></a>
                 <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<span
                     class="color-blue font-md-bold">Facebook</span></a>
                 <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<img :src="imgs.amazon"
-                                                                                            alt="Ecom"></a>
+                    alt="Ecom"></a>
               </div>
             </div>
           </div>
@@ -88,8 +88,8 @@
 
 <script>
 import imgs from '../../js/images'
-import {apiClient} from "@/api/axios.js";
-import {toastWarning, toastSuccess} from "@/utils/toast.js";
+import { apiClient } from "@/api/axios.js";
+import { toastWarning, toastSuccess } from "@/utils/toast.js";
 
 export default {
   data() {
@@ -186,22 +186,23 @@ export default {
           "Content-Type": "application/json",
         }
       },)
-          .then(response => {
-            if (response.data.statusCode == 200) {
-              toastSuccess(data.message || 'Registration successful');
-              const router = this.$router;
-              router.push('/login');
-            } else {
-              toastWarning(data.message || 'An error occurred during registration');
-            }
-          })
+        .then(response => {
+          if (response.data.statusCode == 200) {
+            toastSuccess(data.message || 'Registration successful');
+            const router = this.$router;
+            router.push('/login');
+          } else {
+            toastWarning(data.message || 'An error occurred during registration');
+          }
+        })
     }
   }
 }
 </script>
 
 <style>
-h3, label {
+h3,
+label {
   color: #425A8B;
 }
 
@@ -237,4 +238,3 @@ input[type="date"] {
   font-size: 12px;
 }
 </style>
-  

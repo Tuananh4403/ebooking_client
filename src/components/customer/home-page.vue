@@ -1,6 +1,5 @@
 <template>
     <div>
-        <!-- Header -->
         <header class="header">
             <div class="header-background">
                 <img :src="imgs.hotelBackground" alt="Header Background">
@@ -13,14 +12,13 @@
             </div>
         </header>
 
-        <!-- Top Rooms Section -->
         <section class="top-rooms">
             <h1 class="title">Top các phòng được thuê nhiều nhất</h1>
             <div class="rooms-container">
                 <div v-for="room in topRooms" :key="room.id" class="room-box">
                     <span class="discount-label" v-if="room.discount">Giảm {{ room.discount }}%</span>
                     <div class="room-image">
-                        <img :src="imgs.r" :alt="room.name">
+                        <img :src="imgs.room" :alt="room.name">
                     </div>
                     <div class="room-info">
                         <h2>{{ room.name }}</h2>
@@ -60,7 +58,6 @@ export default {
 };
 </script>
 <style scoped>
-/* Header Styles */
 .header {
     position: relative;
     width: 100%;
@@ -69,6 +66,7 @@ export default {
     align-items: flex-end;
     justify-content: center;
 }
+
 .header-background {
     position: absolute;
     top: 0;
@@ -77,12 +75,14 @@ export default {
     height: 100%;
     overflow: hidden;
 }
+
 .header-background img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     position: absolute;
 }
+
 .header-background::after {
     content: "";
     position: absolute;
@@ -92,6 +92,7 @@ export default {
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
 }
+
 .content-wrapper {
     display: flex;
     justify-content: space-around;
@@ -101,6 +102,7 @@ export default {
     z-index: 1;
     margin-bottom: 10px;
 }
+
 .info-box {
     background: rgba(200, 200, 200, 0.8);
     padding: 15px;
@@ -108,23 +110,25 @@ export default {
     border-radius: 10px;
     width: 30%;
 }
+
 .info-box h2 {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 5px;
 }
+
 .info-box p {
     font-size: 14px;
     margin: 0;
 }
 
-/* Top Rooms Section */
 .title {
     text-align: center;
     font-size: 32px;
     font-weight: bold;
     margin-bottom: 30px;
 }
+
 .rooms-container {
     display: flex;
     justify-content: center;
@@ -132,6 +136,7 @@ export default {
     gap: 20px;
     width: 100%;
 }
+
 .room-box {
     position: relative;
     display: flex;
@@ -143,9 +148,11 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out;
 }
+
 .room-box:hover {
     transform: translateY(-5px);
 }
+
 .discount-label {
     position: absolute;
     top: 10px;
@@ -157,16 +164,19 @@ export default {
     padding: 5px 10px;
     border-radius: 12px;
 }
+
 .room-image {
     width: 50%;
     height: 150px;
     overflow: hidden;
 }
+
 .room-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+
 .room-info {
     width: 50%;
     padding: 15px;
@@ -174,43 +184,50 @@ export default {
     flex-direction: column;
     justify-content: center;
 }
+
 .room-info h2 {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 5px;
 }
+
 .room-info p {
     font-size: 16px;
     margin: 5px 0;
 }
+
 .status-available {
     color: green;
     font-weight: bold;
 }
+
 .status-booked {
     color: red;
     font-weight: bold;
 }
+
 .services-container {
     display: flex;
     justify-content: center;
     gap: 20px;
 }
+
 .service-box {
     width: 30%;
     text-align: center;
 }
+
 .service-box img {
     width: 100px;
     height: 100px;
 }
 
-/* Đánh giá khách hàng */
 .reviews-container {
     display: flex;
     justify-content: center;
     gap: 20px;
 }
+
 .review-box {
     width: 40%;
     text-align: center;
@@ -219,7 +236,6 @@ export default {
     border-radius: 8px;
 }
 
-/* Footer */
 .footer {
     text-align: center;
     padding: 20px;

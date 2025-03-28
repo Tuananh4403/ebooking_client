@@ -146,44 +146,35 @@ export default {
 
 .search-button {
     margin-top: 2%;
-    /* Nhích xuống theo phần trăm */
     background-color: #A0937D;
     color: white;
     border: none;
     padding: 0.5% 3%;
-    /* Tăng nhẹ padding để tạo sự thoải mái */
     border-radius: 10px;
     cursor: pointer;
     font-size: 100%;
-    /* Tăng kích thước font để dễ đọc hơn */
     line-height: 1.5;
-    /* Tăng line-height để tạo không gian hơn */
     transition: background-color 0.3s;
     margin-right: 50px;
 }
 
 .edit-button {
     margin-top: 2%;
-    /* Nhích xuống theo phần trăm */
     background-color: #A0937D;
     color: white;
     border: none;
     padding: 0.5% 3%;
-    /* Tăng nhẹ padding để tạo sự thoải mái */
     border-radius: 10px;
     cursor: pointer;
     font-size: 100%;
     line-height: 1.5;
-    /* Tăng line-height để tạo không gian hơn */
     transition: background-color 0.3s;
     margin-right: 20px;
 }
 
 .delete-button {
     margin-top: 2%;
-    /* Align with edit button */
     background-color: #D9534F;
-    /* Bootstrap Red */
     color: white;
     border: none;
     padding: 0.5% 3%;

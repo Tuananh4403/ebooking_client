@@ -36,7 +36,7 @@ export default {
         handleSearchClicked() {
             this.showSidebarDetail = true;
         },
-      
+
     },
 };
 </script>

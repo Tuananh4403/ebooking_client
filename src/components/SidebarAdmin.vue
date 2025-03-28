@@ -1,24 +1,11 @@
 <template>
   <div class="sidebar" :class="{ expanded: isExpanded }" @click.stop>
-    <div
-        v-for="item in menuItems"
-        :key="item.name"
-        class="menu-item"
-        @click="toggleExpand(item)"
-    >
-      <font-awesome-icon :icon="['fas', item.icon]" class="icon"/>
+    <div v-for="item in menuItems" :key="item.name" class="menu-item" @click="toggleExpand(item)">
+      <font-awesome-icon :icon="['fas', item.icon]" class="icon" />
       <span class="tooltip">{{ item.tooltip }}</span>
 
-      <div
-          v-if="isExpanded && activeItem === item && item.submenu"
-          class="submenu"
-      >
-        <router-link
-            v-for="subItem in item.submenu"
-            :key="subItem.name"
-            :to="subItem.route"
-            class="submenu-item"
-        >
+      <div v-if="isExpanded && activeItem === item && item.submenu" class="submenu">
+        <router-link v-for="subItem in item.submenu" :key="subItem.name" :to="subItem.route" class="submenu-item">
           {{ subItem.name }}
         </router-link>
       </div>
@@ -34,28 +21,28 @@ export default {
       isExpanded: false,
       activeItem: null,
       menuItems: [
-        {icon: 'warehouse', tooltip: 'Báo cáo', route: '/report'},
+        { icon: 'warehouse', tooltip: 'Báo cáo', route: '/report' },
         {
           icon: 'user-plus',
           tooltip: 'Quản lí nhân sự',
           submenu: [
-            {name: 'Quản lí nhân viên', route: '/admin/register-staff-admin'},
+            { name: 'Quản lí nhân viên', route: '/admin/register-staff-admin' },
           ],
         },
         {
           icon: 'store',
           tooltip: 'Quản lí chuồng',
           submenu: [
-            {name: 'Danh sách chuồng', route: '/admin/danh-sach-chuong'},
-            {name: 'Danh sách vị trí', route: '/admin/danh-sach-vi-tri'},
-            {name: 'Danh sách camera', route: '/admin/danh-sach-camera'},
+            { name: 'Danh sách chuồng', route: '/admin/danh-sach-chuong' },
+            { name: 'Danh sách vị trí', route: '/admin/danh-sach-vi-tri' },
+            { name: 'Danh sách camera', route: '/admin/danh-sach-camera' },
           ],
         },
         {
           icon: 'bars',
           tooltip: 'Danh sách đơn hàng',
           submenu: [
-            {name: 'Danh sách đơn hàng', route: '/admin/danh-sach-don-hang'},
+            { name: 'Danh sách đơn hàng', route: '/admin/danh-sach-don-hang' },
           ],
         },
         {
@@ -63,8 +50,8 @@ export default {
           tooltip: 'Đăng xuất',
           name: 'Logout',
           submenu: [
-            {name: 'Phân công lịch chấm thi', route: '/admin/schedule-admin'},
-            {name: 'Lịch chấm thi', route: '/admin/list-schedule'},
+            { name: 'Phân công lịch chấm thi', route: '/admin/schedule-admin' },
+            { name: 'Lịch chấm thi', route: '/admin/list-schedule' },
           ],
         },
       ],
@@ -108,17 +95,17 @@ export default {
 <style scoped>
 .sidebar {
   width: 60px;
-  background-color: #A0937D; /* Taupe Gray */
+  background-color: #A0937D;
   color: #fdfdfd;
-  height: calc(100vh - 60px); /* Adjust height to fit below the header */
+  height: calc(100vh - 60px);
   transition: width 0.3s;
   position: fixed;
   left: 0;
-  top: 100px; /* Push below the header */
+  top: 100px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  z-index: 1; /* Ensure it stays above content but below header */
+  z-index: 1;
 }
 
 .menu-item {
@@ -143,11 +130,11 @@ export default {
   border-radius: 6px;
   padding: 5px;
   position: absolute;
-  z-index: 10000; /* Đặt z-index cao hơn headerAdmin */
-  left: calc(100% + 10px); /* Đặt tooltip sang bên phải icon */
-  top: 50%; /* Đặt tooltip ở giữa của menu item */
-  transform: translateY(-50%); /* Căn giữa tooltip theo chiều dọc */
-  opacity: 0; /* Ẩn tooltip */
+  z-index: 10000;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
   transition: opacity 0.3s;
 }
 

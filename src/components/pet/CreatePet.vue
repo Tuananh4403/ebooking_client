@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="petAge">Ngày  sinh <span class="note">*</span></label>
+                    <label for="petAge">Ngày sinh <span class="note">*</span></label>
                     <input type="date" id="petAge" v-model="newPet.birthday" class="form-control" required />
                     <p v-if="errors.birthday" class="text-danger text-italic">{{ errors.birthday }}</p>
                 </div>
@@ -42,12 +42,12 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="petKind">Giống loài <span class="note">*</span></label>
-                  <select id="petKind" v-model="newPet.type" class="form-control" required>
-                    <option value="">Chọn Giống</option>
-                      <option value="dog">Chó</option>
-                    <option value=" cat"> Mèo</option>
-                  </select>
+                    <label for="petKind">Giống loài <span class="note">*</span></label>
+                    <select id="petKind" v-model="newPet.type" class="form-control" required>
+                        <option value="">Chọn Giống</option>
+                        <option value="dog">Chó</option>
+                        <option value=" cat"> Mèo</option>
+                    </select>
                     <p v-if="errors.type" class="text-danger text-italic">{{ errors.type }}</p>
                 </div>
 
@@ -63,7 +63,7 @@ export default {
         return {
             newPet: {
                 name: '',
-              birthday: '',
+                birthday: '',
                 gender: '',
                 type: '',
                 image: ''
@@ -71,7 +71,7 @@ export default {
             petImage: '',
             errors: {
                 name: '',
-              birthday: '',
+                birthday: '',
                 gender: '',
                 type: ''
             }

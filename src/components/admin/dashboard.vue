@@ -2,7 +2,6 @@
   <div>
         <div class="content">
           <div class="chart-container">
-            <!-- Khung 1: Biểu đồ tổng số cá Koi -->
             <div class="chart-box">
               <h3 class="chart-title">Tổng số cá Koi đăng kí</h3>
               <div class="chart-box-inner">
@@ -16,7 +15,6 @@
               </div>
             </div>
 
-            <!-- Khung 2: Biểu đồ tổng số người dùng đăng kí cuộc thi -->
             <div class="chart-box">
               <h3 class="chart-title">Tổng số người dùng đăng kí cuộc thi</h3>
               <div class="chart-box-inner">
@@ -31,7 +29,6 @@
             </div>
           </div>
 
-          <!-- Khung 3: Biểu đồ tổng số các cuộc thi -->
           <div class="chart-box full-width">
             <h3 class="chart-title">Tổng số các cuộc thi</h3>
             <div class="chart-box-inner">
@@ -50,7 +47,6 @@
 <script>
 import { Chart, registerables } from 'chart.js';
 
-// Đăng ký các thành phần biểu đồ
 Chart.register(...registerables);
 
 export default {

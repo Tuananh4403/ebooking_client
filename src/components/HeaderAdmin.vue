@@ -53,23 +53,30 @@ export default {
   padding: 5px;
   background-color: #fcf7e8 !important;
 }
+
 .logo-img {
   height: 80px;
 }
+
 .brand-text {
   font-size: 1.5rem;
   color: #5c4244;
 }
+
 .nav-link {
   font-size: 1.5rem;
 }
-.user-icon, .fa-list {
+
+.user-icon,
+.fa-list {
   font-size: 1.5rem;
   cursor: pointer;
 }
+
 .user-name {
   font-size: 1.5rem;
 }
+
 .modal {
   position: fixed;
   top: 0;
@@ -81,12 +88,14 @@ export default {
   justify-content: center;
   align-items: center;
 }
+
 .modal-content {
   background: rgb(161, 158, 158);
   padding: 2rem;
   border-radius: 5px;
   position: relative;
 }
+
 .close {
   position: absolute;
   top: 10px;

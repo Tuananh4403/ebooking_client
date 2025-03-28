@@ -8,11 +8,9 @@
 
                     <div class="room-info">
                         <h3 class="room-name">{{ room.name }}</h3>
-                        <p class="room-location">Vị trí: {{ room.locationResponse != null ? room.locationResponse.description : '' }}</p>
-<!--                        <div class="room-rating">-->
-<!--                            <span>Điểm đánh giá: {{ room.rating }} - Tổng số đánh giá: {{ room.reviewsCount }}</span>-->
-<!--                        </div>-->
-                        <p class="room-status">Trạng thái: {{formatBarnStatus(room.status)  }}</p>
+                        <p class="room-location">Vị trí: {{ room.locationResponse != null ?
+                            room.locationResponse.description : '' }}</p>
+                        <p class="room-status">Trạng thái: {{ formatBarnStatus(room.status) }}</p>
                         <button class="book-now-btn">Đặt ngay</button>
                     </div>
                 </div>
@@ -26,9 +24,9 @@
 <script>
 import ModalDetail from './modal/RoomDetail.vue';
 import imgs from '../../js/images';
-import {storeApiPrivate} from "@/api/axios.js";
-import {toastError} from "@/utils/toast.js";
-import {formatBarnStatus} from "@/constants/barn-status.js"
+import { storeApiPrivate } from "@/api/axios.js";
+import { toastError } from "@/utils/toast.js";
+import { formatBarnStatus } from "@/constants/barn-status.js"
 
 
 export default {
@@ -72,8 +70,8 @@ export default {
             selectedRoom: null,
             showModal: false,
             imgs,
-          loading: false,
-          barns: []
+            loading: false,
+            barns: []
         };
     },
     methods: {
@@ -85,40 +83,40 @@ export default {
             this.showModal = false;
             this.selectedRoom = null;
         },
-      fetchBarn() {
-        this.loading = true;
-        storeApiPrivate.get('/api/BarnDetails?api-version=1.0', {
-          params: {
-            PageNumber: this.currentPage,
-            pageSize: this.pageSize,
-            status: 2
-          }
-        })
-            .then(response => {
-              if (response.data.statusCode === 200) {
-                const data = response.data.data;
-                this.barns = data.data;
-                this.totalCount = data.totalRecords;
-                this.pageSize = data.pageSize;
-              } else {
-                console.error('Dữ liệu API không đúng định dạng:', response.data);
-              }
+        fetchBarn() {
+            this.loading = true;
+            storeApiPrivate.get('/api/BarnDetails?api-version=1.0', {
+                params: {
+                    PageNumber: this.currentPage,
+                    pageSize: this.pageSize,
+                    status: 2
+                }
             })
-            .catch(error => {
-              toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
-              console.error(error);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-      },
-      formatBarnStatus(status) {
-          return formatBarnStatus(status);
-      }
+                .then(response => {
+                    if (response.data.statusCode === 200) {
+                        const data = response.data.data;
+                        this.barns = data.data;
+                        this.totalCount = data.totalRecords;
+                        this.pageSize = data.pageSize;
+                    } else {
+                        console.error('Dữ liệu API không đúng định dạng:', response.data);
+                    }
+                })
+                .catch(error => {
+                    toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
+                    console.error(error);
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
+        },
+        formatBarnStatus(status) {
+            return formatBarnStatus(status);
+        }
     },
-  created(){
-    this.fetchBarn();
-  }
+    created() {
+        this.fetchBarn();
+    }
 };
 </script>
 

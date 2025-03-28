@@ -3,21 +3,21 @@
     <div class="modal-content">
       <div class="icon-group">
         <div class="redo-icon" @click="handleRedo">
-          <font-awesome-icon :icon="['fas', 'redo-alt']"/>
+          <font-awesome-icon :icon="['fas', 'redo-alt']" />
         </div>
         <div class="close-icon" @click="closeModal">
-          <font-awesome-icon :icon="['fas', 'times-circle']"/>
+          <font-awesome-icon :icon="['fas', 'times-circle']" />
         </div>
       </div>
       <h2 v-if="locationId != null" class="form-title">Cập Nhật Camera</h2>
       <h2 v-else class="form-title">Tạo Camera Mới</h2>
 
-      <form >
+      <form>
         <div class="form-group-row">
           <div class="form-group">
             <label for="name">Nhập tên camera:<span class="required">*</span></label>
             <input type="text" id="name" v-model="name" :disabled="isLoading" required
-                   placeholder="Vui lòng nhập tên camera... ">
+              placeholder="Vui lòng nhập tên camera... ">
           </div>
 
         </div>
@@ -25,19 +25,18 @@
           <div class="form-group">
             <label for="description">Mô tả:<span class="required">*</span></label>
             <input type="text" id="description" v-model="description" :disabled="isLoading" required
-                   placeholder="Vui lòng nhập mô tả...">
+              placeholder="Vui lòng nhập mô tả...">
           </div>
         </div>
         <div class="form-group-row">
           <div class="form-group">
             <label for="description">Camera url:<span class="required">*</span></label>
             <input type="text" id="description" v-model="videoUrl" :disabled="isLoading" required
-                   placeholder="Vui lòng nhập camera url...">
+              placeholder="Vui lòng nhập camera url...">
           </div>
         </div>
-        <!-- Submit Button -->
         <div class="button-group">
-          <button v-if="locationId==null" type="submit" :disabled="isLoading" @click="submitForm">
+          <button v-if="locationId == null" type="submit" :disabled="isLoading" @click="submitForm">
             {{ isLoading ? 'Đang xử lý...' : 'Tạo mới' }}
           </button>
           <button v-else type="submit" :disabled="isLoading" @click="submitDataUpdate">
@@ -50,13 +49,13 @@
 </template>
 
 <script>
-import {storeApiPrivate} from '@/api/axios.js';
-import {toastError, toastSuccess, toastWarning} from "@/utils/toast.js";
+import { storeApiPrivate } from '@/api/axios.js';
+import { toastError, toastSuccess, toastWarning } from "@/utils/toast.js";
 
 export default {
   name: 'AddUpdateCamera',
   props: {
-    locationId: { // Receive barn ID for editing
+    locationId: { 
       type: String,
       default: null
     }
@@ -75,14 +74,14 @@ export default {
     fetchLocationDetails(id) {
       try {
         storeApiPrivate.get(`/api/camera/${id}?api-version=1.0`)
-            .then(response => {
-              if (response.data.statusCode === 200) {
-                this.camera = response.data.data;
-                this.name =  this.camera.name;
-                this.description =  this.camera.description;
-                this.videoUrl =  this.camera.videoUrl;
-              }
-            });
+          .then(response => {
+            if (response.data.statusCode === 200) {
+              this.camera = response.data.data;
+              this.name = this.camera.name;
+              this.description = this.camera.description;
+              this.videoUrl = this.camera.videoUrl;
+            }
+          });
       } catch (error) {
         console.error('Error fetching barn details:', error);
       }
@@ -90,26 +89,26 @@ export default {
     submitForm() {
       this.isLoading = true;
       try {
-        const data ={
+        const data = {
           name: this.name,
           description: this.description,
           videoUrl: this.videoUrl,
         }
 
         storeApiPrivate.post('/api/camera?api-version=1.0', data)
-            .then(response => {
-              if (response.data.statusCode === 200) {
-                var message = this.isEditMode ? "" : "Tạo chuồng thành công";
-                toastSuccess(message);
-              }
-            })
-            .catch(error => {
-              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
-              console.error('Error fetching barn details:', error);
-            })
-            .finally(() => {
-              this.isLoading = true;
-            });
+          .then(response => {
+            if (response.data.statusCode === 200) {
+              var message = this.isEditMode ? "" : "Tạo chuồng thành công";
+              toastSuccess(message);
+            }
+          })
+          .catch(error => {
+            toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+            console.error('Error fetching barn details:', error);
+          })
+          .finally(() => {
+            this.isLoading = true;
+          });
 
         this.closeModal();
       } catch (error) {
@@ -126,21 +125,21 @@ export default {
           videoUrl: this.videoUrl,
         }
         storeApiPrivate.put(`/api/camera?id=${this.location.id}&api-version=1.0`, data, {
-          headers: {"Content-Type": "application/json"},
+          headers: { "Content-Type": "application/json" },
         })
-            .then(response => {
-              if (response.data.statusCode === 200) {
-                var message = "Cập nhật chuồng thành công";
-                toastSuccess(message);
-              }
-            })
-            .catch(error => {
-              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
-              console.error('Error fetching barn details:', error);
-            })
-            .finally(() => {
-              this.isLoading = true;
-            });
+          .then(response => {
+            if (response.data.statusCode === 200) {
+              var message = "Cập nhật chuồng thành công";
+              toastSuccess(message);
+            }
+          })
+          .catch(error => {
+            toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+            console.error('Error fetching barn details:', error);
+          })
+          .finally(() => {
+            this.isLoading = true;
+          });
 
         this.closeModal();
       } catch (error) {
@@ -158,8 +157,8 @@ export default {
     },
 
     resetForm() {
-        this.name= ''
-          this.description=''
+      this.name = ''
+      this.description = ''
 
       this.barn = null
     },
@@ -281,7 +280,8 @@ button:hover {
   background-color: #0056b3;
 }
 
-.rank-grid th, .rank-grid td {
+.rank-grid th,
+.rank-grid td {
   padding: 15px;
   text-align: center;
   border: 1px solid #ddd;

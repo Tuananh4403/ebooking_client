@@ -56,10 +56,10 @@
             <div>
               <p class="font-md color-gray-900">Download our Apps and get extra 15% Discount on your first Order&mldr;!
               </p>
-              <div class="mt-20"><a class="mr-10" href="#"><img :src="imgs.appstore"
-                    alt="Ecom"></a><a href="#"><img :src="imgs.ggPlay" alt="Ecom"></a></div>
-              <p class="font-md color-gray-900 mt-20 mb-10">Secured Payment Gateways</p><img
-                :src="imgs.payment" alt="Ecom">
+              <div class="mt-20"><a class="mr-10" href="#"><img :src="imgs.appstore" alt="Ecom"></a><a href="#"><img
+                    :src="imgs.ggPlay" alt="Ecom"></a></div>
+              <p class="font-md color-gray-900 mt-20 mb-10">Secured Payment Gateways</p><img :src="imgs.payment"
+                alt="Ecom">
             </div>
           </div>
         </div>
@@ -68,10 +68,9 @@
     <div class="footer-2">
       <div class="footer-bottom-1">
         <div class="container">
-          <div class="footer-2-top mb-20"><a href="index.html"><img alt="Ecom"
-                :src="imgs.logo2"></a><a class="font-xs color-gray-1000"
-              href="#">EcomMarket.com</a><a class="font-xs color-gray-1000" href="#">Ecom Partners</a><a
-              class="font-xs color-gray-1000" href="#">Ecom
+          <div class="footer-2-top mb-20"><a href="index.html"><img alt="Ecom" :src="imgs.logo2"></a><a
+              class="font-xs color-gray-1000" href="#">EcomMarket.com</a><a class="font-xs color-gray-1000"
+              href="#">Ecom Partners</a><a class="font-xs color-gray-1000" href="#">Ecom
               Bussiness</a><a class="font-xs color-gray-1000" href="#">Ecom Factory</a></div>
           <div class="footer-2-bottom">
             <div class="head-left-footer">
