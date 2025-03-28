@@ -16,5 +16,16 @@ export const imgs = {
     google: 'assets/imgs/page/account/google.svg',
     meo: 'assets/imgs/template/meo.jpg',
     hotel: 'assets/imgs/template/hotel.jpg',
+    hotelBackground: 'assets/pet/hotel.png',
+    room: 'assets/pet/room.png',
+    camera: 'assets/pet/camera.png',
+    eat: 'assets/pet/eat.png',
+    spa: 'assets/pet/spa.png',
+    user: 'assets/pet/user.png'
+
+
+
+
+
   };
   export default imgs;

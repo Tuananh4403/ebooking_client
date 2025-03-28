@@ -13,6 +13,7 @@ import listCamera from "@/components/admin/component/list-camera.vue";
 import ListService from "@/components/admin/component/list-service.vue";
 import ListBookingOrder from "@/components/admin/component/list-booking-order.vue"
 import HistoryTransaction from "@/components/customer/history-page.vue"
+import HomePageIndex from '@/components/customer/home-page.vue'
 const route = [
   {
     path: "/",
@@ -48,6 +49,11 @@ const route = [
         path: '/history-transaction',
         name: 'HistoryTransaction',
         component: HistoryTransaction
+      },
+      {
+        path: '/trang-chu',
+        name: 'HomePageIndex',
+        component: HomePageIndex
       },
     ],
   },

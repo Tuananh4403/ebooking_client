@@ -6,7 +6,7 @@
     <div class="container">
       <div class="main-header">
         <div class="header-left">
-          <div class="header-logo"><a class="d-flex" href="index.html"><img alt="Ecom" :src="imgs.logo"></a></div>
+          <div class="header-logo"></div>
           <div class="header-search">
             <div class="box-header-search">
               <form class="form-search" method="post" action="#">
@@ -19,7 +19,7 @@
           <div class="header-nav">
             <div class="nav-main-menu d-none d-xl-block">
               <ul class="main-menu">
-                <li class="has-children"><router-link class="active" to="/">Trang chủ</router-link>
+                <li class="has-children"><router-link class="active" to="/trang-chu">Trang chủ</router-link>
                 </li>
                 <li class="has-children"><router-link to="shop-grid.html">Đặt lịch</router-link>
                   <ul class="sub-menu two-col">
@@ -44,35 +44,31 @@
           </div>
           <div class="header-shop">
             <div class="d-inline-block box-dropdown-cart">
-              <!-- <span
-                class="font-lg icon-list icon-account">
-              </span> -->
               <font-awesome-icon :icon="['fas', 'user']" />
+              {{ fullName }}
               <div class="dropdown-account">
                 <ul>
-                  <li><router-link to="page-account.html">Tài khoản của tôi</router-link></li>
-                  <li><router-link to="page-account.html">Cài đặt tài khoản</router-link></li>
-                  <li><router-link to="page-login.html">Đăng xuất</router-link></li>
+                  <li>Đăng xuất</li>
                 </ul>
               </div>
-            </div><a class="font-lg icon-list icon-wishlist" to="shop-wishlist.html"><span
-                class="number-item font-xs">5</span></a>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </template>
 <script>
 import TopBar from './TopBar.vue';
-import imgs from '../js/images'
+import { getUserFullName } from '@/utils/auth';
 export default {
   components: {
     TopBar
   },
-  data() {
-    return {
-      imgs
+  data(){
+    return{
+      fullName: getUserFullName(),
     }
   }
 }
