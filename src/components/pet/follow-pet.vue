@@ -46,7 +46,7 @@
 <script>
 export default {
     props: {
-        listPet: {
+        petInfo: {
             type: Object,
             default: () => ({
                 name: "Milo",

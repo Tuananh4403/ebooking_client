@@ -12,19 +12,19 @@
             <div v-if="order" class="order-container">
                 <div class="order-header">
                     <div>Khách hàng</div>
-                    <div>Mã đơn hàng</div>
+<!--                    <div>Mã đơn hàng</div>-->
                     <div>Check-in</div>
                     <div>Check-out</div>
-                    <div>Số phòng</div>
+                    <div>Tên phòng</div>
                     <div>Tên thú cưng</div>
 
                 </div>
                 <div class="order-content">
                     <div>{{ order.customerName }}</div>
-                    <div>{{ order.orderId }}</div>
-                    <div>{{ order.checkinTime }}</div>
-                    <div>{{ order.checkoutTime }}</div>
-                    <div>{{ order.roomNumber }}</div>
+<!--                    <div>{{ order.id }}</div>-->
+                    <div>{{formatDate(order.checkInDate)}}</div>
+                    <div>{{ formatDate(order.checkOutDate) }}</div>
+                    <div>{{ order.barnName }}</div>
                     <div>{{ order.petName }}</div>
                 </div>
                 <button @click="confirmCheckin" class="btn-checkin">Xác nhận Check-in</button>
@@ -35,6 +35,8 @@
 
 <script>
 import Swal from "sweetalert2";
+import {bookingApiPrivate} from "@/api/axios.js";
+import {toastWarning} from "@/utils/toast.js";
 export default {
     data() {
         return {
@@ -51,9 +53,31 @@ export default {
         };
     },
     methods: {
+      formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
         fetchOrder() {
-            this.order = { ...this.fakeOrder, orderId: this.checkinCode || "FAKE123" };
-        },
+            bookingApiPrivate.get(`/api/booking/${this.checkinCode}?api-version=1.0`)
+                .then(response => {
+                  if (response.data.statusCode === 200) {
+                    var data = response.data.data;
+                    console.log(data)
+                    this.order =data;
+                  }
+                })
+                .catch(error => {
+                  toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+                  console.error('Error fetching barn details:', error);
+                })
+                .finally(() => {
+                  this.isLoading = true;
+                });
+          },
         confirmCheckin() {
             Swal.fire("Thành công", "Check-in thành công!", "success");
             this.checkinCode = "";

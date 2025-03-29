@@ -1,9 +1,10 @@
 
 import { createStore } from 'vuex';
-import { apiClient } from '@/api/axios';
+import {apiClient, authApiPrivate} from '@/api/axios';
 import { toastSuccess, toastError, toastWarning } from '@/utils/toast';
 import { saveToken, saveUserId, saveUserName, getToken, getUserId, getUserName, saveUserRole, getUserRole, saveUserFullName } from '@/utils/auth';
-
+import { auth, provider } from "@/utils/firebase.js"// Firebase imports
+import { signInWithPopup } from 'firebase/auth';
 export default createStore({
   state: {
     currentUser: null,
@@ -55,6 +56,41 @@ export default createStore({
           toastWarning(response.data.message);
         }
       
+    },
+    async loginWithGoogle({ commit }) {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        if (user) {
+          const token = await user.getIdToken(); // Firebase token
+
+          // Send Firebase token to backend to verify and get user details
+          const response = await apiClient.post('/api/account/firebase-login?api-version=1.0', { idToken: token });
+
+          if (response.data.statusCode === 200) {
+            const { userId, fullName, email, username, role, accessToken, refreshToken } = response.data.data;
+
+            commit('setUser', { userId, fullName, email, username, role });
+            commit('setRole', role);
+            commit('setTokens', { accessToken, refreshToken });
+
+            // Save credentials
+            saveToken(accessToken, refreshToken);
+            saveUserId(userId);
+            saveUserFullName(fullName);
+            saveUserName(username);
+            saveUserRole(role);
+
+            toastSuccess("Đăng nhập Google thành công!");
+          } else {
+            toastWarning(response.data.message || "Đăng nhập Google thất bại.");
+          }
+        }
+      } catch (error) {
+        toastError("Lỗi đăng nhập Google. Vui lòng thử lại.");
+        console.error("Google login error:", error);
+      }
     },
     logout({ commit }) {
       commit('logout');

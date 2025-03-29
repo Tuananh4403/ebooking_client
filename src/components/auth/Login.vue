@@ -41,7 +41,7 @@
             <div class="box-login-social pt-65 pl-50">
               <h5 class="text-center">Tài khoản xã hội</h5>
               <div class="box-button-login mt-25">
-                <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<img :src="imgs.google"
+                <a class="btn btn-login font-md-bold color-brand-3 mb-15" @click="loginWithGoogle">Đăng nhập với<img :src="imgs.google"
                     alt="Ecom"></a>
               </div>
             </div>
@@ -94,7 +94,12 @@ export default {
           break;
       }
     },
-
+    async loginWithGoogle() {
+      await this.$store.dispatch('loginWithGoogle');
+      if (getUserRole() === 'Customer') {
+        this.$router.push('/list-room-empty');
+      }
+    },
     async handleLogin() {
       try {
         await this.$store.dispatch('login', {
@@ -104,8 +109,8 @@ export default {
         if (getUserRole() === 'Customer') {
           this.$router.push('/list-room-empty');
         }
-        if (getUserRole().includes('Doctor')) {
-          this.$router.push('/record-list');
+        if (getUserRole() === 'Admin') {
+          this.$router.push('/admin');
         }
       } catch (error) {
         console.error('Login failed:', error);

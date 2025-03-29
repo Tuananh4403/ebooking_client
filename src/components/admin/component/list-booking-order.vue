@@ -80,33 +80,34 @@ export default {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
       },
-      formatBookingStatus(status){
+      formatBookingStatus(status) {
         return formatBookingStatus(status);
       },
       fetchBooking() {
-        bookingApiPrivate.get(`/api/booking?api-version=1.0`,
-            {
-              params: {
-                PageNumber: this.currentPage,
-                pageSize: this.pageSize,
-              }
-            })
-            .then(response => {
-              if (response.data.statusCode === 200) {
-                var data = response.data.data;
-                this.orders =data.data;
-                this.totalCount = data.totalRecords;
-                this.pageSize = data.pageSize;
-              }
-            })
-            .catch(error => {
-              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
-              console.error('Error fetching barn details:', error);
-            })
-            .finally(() => {
-              this.isLoading = true;
-            });
-      },
+          bookingApiPrivate.get(`/api/booking?api-version=1.0`,
+              {
+                params: {
+                  PageNumber: this.currentPage,
+                  pageSize: this.pageSize,
+                }
+              })
+              .then(response => {
+                if (response.data.statusCode === 200) {
+                  var data = response.data.data;
+                  this.orders =data.data;
+                  this.totalCount = data.totalRecords;
+                  this.pageSize = data.pageSize;
+                }
+              })
+              .catch(error => {
+                toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
+                console.error('Error fetching barn details:', error);
+              })
+              .finally(() => {
+                this.isLoading = true;
+              });
+        },
+
         onPageChange(page) {
             this.currentPage = page;
             this.fetchBooking();
