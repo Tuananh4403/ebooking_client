@@ -14,6 +14,7 @@ import ListService from "@/components/admin/component/list-service.vue";
 import ListBookingOrder from "@/components/admin/component/list-booking-order.vue";
 import HistoryTransaction from "@/components/customer/history-page.vue";
 import HomePageIndex from "@/components/customer/home-page.vue";
+import BarnType from "@/components/admin/component/list-type-barn.vue"
 const route = [
   {
     path: "/",
@@ -82,6 +83,10 @@ const route = [
         path: "danh-sach-don-hang",
         component: ListBookingOrder,
       },
+      {
+        path: "danh-sach-loai-chuong",
+        component:BarnType,
+      }
     ],
   },
 ];

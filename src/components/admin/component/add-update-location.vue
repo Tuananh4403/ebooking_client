@@ -90,8 +90,9 @@ export default {
         storeApiPrivate.post('/api/location?api-version=1.0', data)
           .then(response => {
             if (response.data.statusCode === 200) {
-              var message = this.isEditMode ? "" : "Tạo chuồng thành công";
+              var message = this.isEditMode ? "" : "Tạo vị trí thành công";
               toastSuccess(message);
+              window.location.reload();
             }
           })
           .catch(error => {

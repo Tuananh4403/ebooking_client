@@ -21,18 +21,18 @@
               <ul class="main-menu">
                 <li class="has-children"><router-link class="active" to="/trang-chu">Trang chủ</router-link>
                 </li>
-                <li class="has-children"><router-link to="shop-grid.html">Đặt lịch</router-link>
+                <li class="has-children"><router-link to="/list-room-empty">Đặt lịch</router-link>
                   <ul class="sub-menu two-col">
                     <li><router-link to="/list-room-empty">Danh sách phòng còn trống</router-link></li>
                     <li><router-link to="/list-booking">Phòng đã đặt</router-link></li>
                   </ul>
                 </li>
-                <li class="has-children"><router-link to="#">Thú cưng</router-link>
+                <li class="has-children"><router-link to="/pet">Thú cưng</router-link>
                   <ul class="sub-menu">
                     <li><router-link to="/pet">Thú cưng của tôi</router-link></li>
                   </ul>
                 </li>
-                <li class="has-children"><router-link to="shop-vendor-list.html">Thanh toán</router-link>
+                <li class="has-children"><router-link to="/history-transaction">Thanh toán</router-link>
                   <ul class="sub-menu">
                     <li><router-link to="/history-transaction">Lịch sử giao dịch</router-link></li>
                   </ul>

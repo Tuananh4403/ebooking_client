@@ -36,6 +36,7 @@ export default {
             { name: 'Danh sách chuồng', route: '/admin/danh-sach-chuong' },
             { name: 'Danh sách vị trí', route: '/admin/danh-sach-vi-tri' },
             { name: 'Danh sách camera', route: '/admin/danh-sach-camera' },
+            { name: 'Danh sách loại chuồng', route: '/admin/danh-sach-loai-chuong' },
           ],
         },
         {

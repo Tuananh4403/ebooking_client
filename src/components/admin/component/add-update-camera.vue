@@ -100,6 +100,7 @@ export default {
             if (response.data.statusCode === 200) {
               var message = this.isEditMode ? "" : "Tạo chuồng thành công";
               toastSuccess(message);
+              window.location.reload();
             }
           })
           .catch(error => {
