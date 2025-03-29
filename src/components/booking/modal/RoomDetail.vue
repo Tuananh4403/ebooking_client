@@ -10,6 +10,8 @@
         <h3>{{ selectedRoom.name }}</h3>
 
         <div class="modal-section">
+          <h3>Giá phòng: 350.000 VND</h3>
+
         </div>
 
         <div class="modal-section">

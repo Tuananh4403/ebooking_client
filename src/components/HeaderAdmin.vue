@@ -3,14 +3,10 @@
     <div class="container-fluid">
       <div class="navbar-brand d-flex align-items-center col-3">
         <img :src="logo" alt="Logo" class="logo-img" />
-        <span class="brand-text">Pet Homestay</span>
-      </div>
-      <div class="col-5"></div>
-      <div class="col-2 d-flex align-items-center justify-content-center">
-        <a class="nav-link" href="/admin">Trang chủ</a>
+        <span class="brand-text">A.L.O Hotel Management</span>
       </div>
       <div class="col-2 d-flex align-items-center justify-content-end">
-        <i class="fas fa-user user-icon"></i>
+        <font-awesome-icon :icon="['fas', 'user']" />
         <span class="user-name ms-2">{{ fullName }}</span>
         <i class="fas fa-list ms-2" @click="toggleMenu"></i>
       </div>
@@ -50,8 +46,9 @@ export default {
 
 <style scoped>
 .navbar {
-  padding: 5px;
+  /* padding: 5px; */
   background-color: #fcf7e8 !important;
+  height: 10% !important;
 }
 
 .logo-img {
@@ -59,7 +56,8 @@ export default {
 }
 
 .brand-text {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: bold;
   color: #5c4244;
 }
 
@@ -74,7 +72,7 @@ export default {
 }
 
 .user-name {
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
 .modal {

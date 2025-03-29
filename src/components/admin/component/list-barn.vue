@@ -13,6 +13,7 @@
           <tr>
             <th>STT</th>
             <th>Tên</th>
+            <th>Giá</th>
             <th>Loại</th>
             <th>Vị trí</th>
             <th>Camera</th>
@@ -25,6 +26,7 @@
           <tr v-for="(barn, index) in barns" :key="index">
             <td>{{ index + 1 }}</td>
             <td>{{ barn.name }}</td>
+            <td>350.000 VND</td>
             <td>{{ barn.barnTypeId != null ? barn.barnTypeResponse.name : '' }}</td>
             <td>{{ barn.locationId != null ? barn.locationResponse.name : '' }}</td>
             <td>{{ barn.cameraId != null ? barn.cameraResponse.name : '' }}</td>

@@ -21,12 +21,17 @@ export default {
       isExpanded: false,
       activeItem: null,
       menuItems: [
-        { icon: 'warehouse', tooltip: 'Báo cáo', route: '/report' },
+        { icon: 'warehouse', 
+          tooltip: 'Báo cáo', 
+          submenu: [
+            { name: 'Báo cáo thống kê', route: '/admin/report' },
+          ],
+        },
         {
           icon: 'user-plus',
           tooltip: 'Quản lí nhân sự',
           submenu: [
-            { name: 'Quản lí nhân viên', route: '/admin/register-staff-admin' },
+            { name: 'Quản lí nhân viên', route: '/admin/danh-sach-nhan-vien' },
           ],
         },
         {
@@ -102,7 +107,6 @@ export default {
   transition: width 0.3s;
   position: fixed;
   left: 0;
-  top: 100px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -141,6 +145,7 @@ export default {
 
 .submenu {
   position: fixed;
+  top: 0;
   left: 25%;
   width: 200px;
   padding: 10px;
@@ -168,5 +173,12 @@ export default {
   cursor: pointer;
   margin: 5px 0;
   text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  border-radius: 5px;
+}
+.submenu-item:hover {
+  background-color: #5a3d2b; 
+  color: white; 
+  transform: translateX(5px); 
 }
 </style>

@@ -6,7 +6,6 @@ import Pet from "@/components/pet/Index.vue";
 import ListRoomEmpty from "@/components/booking/Index.vue";
 import ListBooking from "@/components/booking/ListBooking.vue";
 import AdminPage from "@/pages/AdminPage.vue";
-import dashboard from "@/components/admin/dashboard.vue";
 import listBarn from "@/components/admin/component/list-barn.vue";
 import listLocation from "@/components/admin/component/list-location.vue";
 import listCamera from "@/components/admin/component/list-camera.vue";
@@ -15,6 +14,8 @@ import ListBookingOrder from "@/components/admin/component/list-booking-order.vu
 import HistoryTransaction from "@/components/customer/history-page.vue";
 import HomePageIndex from "@/components/customer/home-page.vue";
 import BarnType from "@/components/admin/component/list-type-barn.vue"
+import Report from "@/components/admin/dashboard.vue"
+import ListStaff from "@/components/admin/component/list-staff.vue"
 const route = [
   {
     path: "/",
@@ -86,6 +87,14 @@ const route = [
       {
         path: "danh-sach-loai-chuong",
         component:BarnType,
+      },
+      {
+        path: "report",
+        component:Report,
+      },
+      {
+        path: "danh-sach-nhan-vien",
+        component:ListStaff,
       }
     ],
   },

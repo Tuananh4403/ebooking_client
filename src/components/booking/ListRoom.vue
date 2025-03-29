@@ -8,6 +8,7 @@
 
                     <div class="room-info">
                         <h3 class="room-name">{{ room.name }}</h3>
+                        <p class="room-location">Giá phòng/1 ngày: 350.000 VND</p>
                         <p class="room-location">Vị trí: {{ room.locationResponse != null ?
                             room.locationResponse.description : '' }}</p>
                         <p class="room-status">Trạng thái: {{ formatBarnStatus(room.status) }}</p>

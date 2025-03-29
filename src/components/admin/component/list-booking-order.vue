@@ -2,6 +2,20 @@
     <div class="content ">
         <div class="title-search-container">
             <h1 class="title">DANH SÁCH ĐƠN HÀNG KHÁCH HÀNG</h1>
+            <button class="search-button" @click="openSearchModal">Tìm kiếm</button>
+            <vue-multiselect
+                v-model="selectedStatus"
+                :options="statusOptions"
+                :searchable="false"
+                :allow-empty="true"
+                :show-labels="false"
+                :taggable="false"
+                placeholder="Chọn tình trạng"
+                label="label"
+                track-by="value"
+                class="status-filter"
+                @select="fetchBooking"
+            />
         </div>
         <vue-loading class="loading" :active="loading" :loader="'dots'" :color="'#22445d'" :can-cancel="true"
             :height="50" :Width="50" />
@@ -52,6 +66,7 @@ import {bookingApiPrivate, storeApiPrivate} from '@/api/axios.js';
 import { toastError, toastWarning } from "@/utils/toast.js";
 import {getUserId} from "@/utils/auth.js";
 import {formatBookingStatus} from "@/constants/booking-status.js";
+import { BOOKING_STATUS } from '@/constants/booking-status.js';
 
 export default {
     name: "ListBarn",
@@ -69,6 +84,10 @@ export default {
             pageSize: 10,
             totalCount: 0,
             loading: false,
+            statusOptions: [
+                { label: "Tất cả", value: "" },
+                ...Object.entries(BOOKING_STATUS).map(([key, label]) => ({ value: key, label }))
+            ]
         };
     },
     methods: {
@@ -131,7 +150,12 @@ export default {
 </script>
 
 
-<style>
+<style lang="css" scoped>
+::v-deep(.multiselect) {
+    width: 40% !important; 
+    max-width: 40%;
+    margin-right: 5% !important;
+}
 .main-container {
     display: flex;
 }
@@ -206,7 +230,6 @@ export default {
 
 .table-container {
     margin-top: 20px;
-    border-radius: 5px;
     overflow: hidden;
 }
 
@@ -218,6 +241,7 @@ export default {
 }
 
 .contest-table th {
+    padding: 12px 15px;
     font-weight: bold;
     text-align: center;
     border-bottom: 2px solid #ddd;

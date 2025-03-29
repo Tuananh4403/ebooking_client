@@ -19,7 +19,13 @@
             <input type="text" id="name" v-model="form.name" :disabled="isLoading" required
               placeholder="Vui lòng nhập tên chuồng... ">
           </div>
-
+        </div>
+        <div class="form-group-row">
+          <div class="form-group">
+            <label for="name">Nhập giá chuồng:<span class="required">*</span></label>
+            <input type="number" id="price" :disabled="isLoading" required
+              placeholder="Vui lòng nhập giá chuồng... ">
+          </div>
         </div>
         <div class="form-group-row">
           <div class="form-group">

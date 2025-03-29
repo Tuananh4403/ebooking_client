@@ -233,6 +233,7 @@ export default {
 }
 
 .contest-table th {
+  padding: 12px 15px;
   font-weight: bold;
   text-align: center;
   border-bottom: 2px solid #ddd;
