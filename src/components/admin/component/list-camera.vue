@@ -1,7 +1,7 @@
 <template>
   <div class="content ">
     <div class="title-search-container">
-      <h1 class="title">DANH SÁCH VỊ TRÍ</h1>
+      <h1 class="title">DANH SÁCH CAMERA</h1>
       <button class="search-button" @click="openSearchModal">Tìm kiếm</button>
       <button class="search-button" @click="openModal">Tạo</button>
     </div>
