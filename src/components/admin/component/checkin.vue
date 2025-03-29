@@ -20,7 +20,7 @@
 
                 </div>
                 <div class="order-content">
-                    <div>{{ order.customerName }}</div>
+                    <div>Nguyễn Lê Chi</div>
 <!--                    <div>{{ order.id }}</div>-->
                     <div>{{formatDate(order.checkInDate)}}</div>
                     <div>{{ formatDate(order.checkOutDate) }}</div>
