@@ -87,6 +87,7 @@ export default {
               if (response.data.statusCode === 200) {
                 var message = this.isEditMode ? "" : "Tạo thú nuôi thành công";
                 toastSuccess(message);
+                window.location.reload();
               }
             })
             .catch(error => {

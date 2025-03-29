@@ -73,10 +73,6 @@
               <div class="box-button-login mt-25">
                 <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<img :src="imgs.google"
                     alt="Ecom"></a>
-                <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<span
-                    class="color-blue font-md-bold">Facebook</span></a>
-                <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<img :src="imgs.amazon"
-                    alt="Ecom"></a>
               </div>
             </div>
           </div>

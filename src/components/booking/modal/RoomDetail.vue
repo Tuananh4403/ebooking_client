@@ -22,19 +22,6 @@
         </div>
 
         <div class="modal-section">
-          <h4>Dịch vụ</h4>
-          <vue-multiselect v-model="selectedServices" :options="listService" :multiple="true" :close-on-select="false"
-            :clear-on-select="false" label="description" track-by="id" placeholder="Chọn dịch vụ">
-            <template v-slot:option="{ option }">
-              <div class="service-option">
-                <span>{{ option.description }}</span>
-
-              </div>
-            </template>
-          </vue-multiselect>
-        </div>
-
-        <div class="modal-section">
           <h4>Bài đánh giá</h4>
           <p>Điểm đánh giá trung bình: {{ selectedRoom.rating }} - Tổng số nhận xét: {{
             selectedRoom.reviewsCount }}</p>

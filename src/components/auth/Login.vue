@@ -37,7 +37,15 @@
                   ngay</router-link></div>
             </div>
           </div>
-          <div class="col-lg-5"></div>
+          <div class="col-lg-5">
+            <div class="box-login-social pt-65 pl-50">
+              <h5 class="text-center">Tài khoản xã hội</h5>
+              <div class="box-button-login mt-25">
+                <a class="btn btn-login font-md-bold color-brand-3 mb-15">Đăng nhập với<img :src="imgs.google"
+                    alt="Ecom"></a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <Teleport to="body">
@@ -50,6 +58,7 @@
 <script>
 import ReSetPassword from '@/components/auth/ResetPass.vue';
 import { getUserRole } from '@/utils/auth';
+import imgs from '../../js/images'
 export default {
   components: {
     ReSetPassword
@@ -62,6 +71,7 @@ export default {
       },
       errors: {},
       showResetModal: false,
+      imgs
     }
   },
   methods: {
