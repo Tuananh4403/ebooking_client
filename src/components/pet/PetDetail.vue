@@ -5,10 +5,10 @@
 
             <h3 class="modal-title">Thông tin thú cưng</h3>
             <div class="image-container">
-                <img :src="imgs.meo" alt="Pet" class="img-fluid pet-image" />
-                <button class="plus-btn" @click="openVideoModal">
-                    <font-awesome-icon :icon="['fas', 'plus']" />
-                </button>
+                <img :src="pet.image ?? imgs.meo" alt="Pet" class="img-fluid pet-image" />
+<!--                <button class="plus-btn" @click="openVideoModal">-->
+<!--                    <font-awesome-icon :icon="['fas', 'plus']" />-->
+<!--                </button>-->
             </div>
 
             <div class="modal-body">
@@ -54,11 +54,13 @@
 
 <script>
 import imgs from '../../js/images';
-import FollowPet from './follow-pet.vue';
+import {customerApiPrivate} from "@/api/axios.js";
+import {getUserId} from "@/utils/auth.js";
+
 export default {
     props: ['pet'],
+    emits: ['close'],
     components: {
-        FollowPet
     },
     data() {
         return {
@@ -111,12 +113,16 @@ export default {
             }
         },
         deletePet() {
-            console.log("Xóa thú cưng", this.pet);
+          var userId = getUserId();
+          customerApiPrivate.delete(`/api/${userId}/pets/${this.pet.id}?api-version=1.0`)
+              .then(response => {
+
+              });
             this.$emit("close");
         },
-        openVideoModal() {
-            this.showFollowPet = true;
-        }
+        // openVideoModal() {
+        //     this.showFollowPet = true;
+        // }
     }
 };
 </script>

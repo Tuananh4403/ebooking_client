@@ -3,7 +3,7 @@
     <div class="row">
       <h2>Danh sách đang lưu chuồng</h2>
       <div class="col-md-10">
-        <PetsList v-if="viewMode === 'petsList'" :pets="pets"/>
+        <PetsList v-if="viewMode === 'petsList'" :pets="barnHistory"/>
       </div>
     </div>
   </div>
@@ -14,11 +14,15 @@ import PetsList from './list-pet.vue';
 import {getUserId} from "@/utils/auth.js";
 import {customerApiPrivate, storeApiPrivate} from "@/api/axios.js";
 import {toastError, toastSuccess, toastWarning} from "@/utils/toast.js";
+import {formatDate} from "@/utils/common.js";
+import images from "@/js/images.js";
+const customerServiceUrl = import.meta.env.VITE_CUSTOMER_SERVICE_URL;
 
 export default {
   components: {
     PetsList,
   },
+
   data() {
     return {
       viewMode: 'petsList',
@@ -28,7 +32,22 @@ export default {
       totalCount:0,
       currentPage: 1,
       pageSize: 10,
+      barnHistory: []
     };
+  },
+  setup() {
+    const formatDateTime = (date) => {
+      return new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false, // Use 24-hour format; change to true for 12-hour format with AM/PM
+      });
+    };
+    return { formatDateTime };
   },
   methods: {
     changeView(view) {
@@ -41,7 +60,7 @@ export default {
     fetchPet() {
       this.loading = true;
       var userId = getUserId();
-      customerApiPrivate.get(`/api/${userId}/pets?api-version=1.0`, {
+      customerApiPrivate.get(`/api/history-barn?customerId=${userId}&api-version=1.0`, {
         params: {
           PageNumber: this.currentPage,
           pageSize: this.pageSize,
@@ -50,10 +69,21 @@ export default {
           .then(response => {
             if (response.data.statusCode === 200) {
               const data = response.data.data;
-              this.pets = data.data.map(pet => ({
-                ...pet,
-                birthday: pet.birthday ? new Date(pet.birthday).toISOString().split('T')[0] : '' // Định dạng YYYY-MM-DD
+              console.log(data)
+              this.barnHistory = data.data.map(history => ({
+                ...history,
+                image: history.pet.imagePath != null ? customerServiceUrl+ '/' + history.pet.imagePath : images.meo,
+                customerName: history.customer.name,
+                petName: history.pet.name,
+                barnName: history.barnName,
+                timeIn: history.timeIn != null ? formatDate(history.timeIn) : null,
+                timeOut: history.timeOut != null ? formatDate(history.timeOut) : null,
+                birthday: formatDate(history.pet.birthday),
+                petGender: history.pet.gender ? "Đực" : "Cái",
+                petType: history.pet.type == 'dog' ? "Chó" : "Mèo"
+                // Định dạng YYYY-MM-DD
               }));
+              console.log(this.barnHistory)
               this.totalCount = data.totalRecords;
               this.pageSize = data.pageSize;
             } else {
@@ -67,41 +97,6 @@ export default {
           .finally(() => {
             this.loading = false;
           });
-    },
-    createPet(newPet){
-      this.isLoading = true;
-      try {
-        var userId = getUserId();
-        const data = new FormData();
-        console.log(newPet);
-        data.append('name', newPet.name);
-        data.append('Type', newPet.type);
-        data.append('Gender', newPet.gender);
-        data.append('Birthday', newPet.birthday);
-        // if (this.form.image) data.append('image', this.form.image);
-
-        customerApiPrivate.post(`/api/${userId}/pets?api-version=1.0`, data, {
-          headers: {'Content-Type': 'multipart/form-data'},
-        })
-            .then(response => {
-              if (response.data.statusCode === 200) {
-                var message = this.isEditMode ? "" : "Tạo thú nuôi thành công";
-                toastSuccess(message);
-                window.location.reload();
-              }
-            })
-            .catch(error => {
-              toastWarning("Lưu dữ liệu thất bại, vui lòng thử lại!")
-              console.error('Error fetching barn details:', error);
-            })
-            .finally(() => {
-              this.isLoading = true;
-            });
-
-      } catch (error) {
-        console.error('Error creating competition:', error);
-        toastError('Có lỗi xảy ra, vui lòng thử lại.');
-      }
     },
   },
   created() {

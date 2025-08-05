@@ -66,7 +66,7 @@ export default {
                 birthday: '',
                 gender: '',
                 type: '',
-                image: ''
+                image: null
             },
             petImage: '',
             errors: {
@@ -117,6 +117,7 @@ export default {
         },
         addPetHandler() {
             if (this.validateForm()) {
+              this.newPet.image = this.petImage;
                 this.$emit('addPet', this.newPet);
                 this.newPet = { name: '', birthday: '', gender: '', type: '', image: '' };
                 this.petImage = '';

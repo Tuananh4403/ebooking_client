@@ -2,7 +2,18 @@
 import { createStore } from 'vuex';
 import {apiClient, authApiPrivate} from '@/api/axios';
 import { toastSuccess, toastError, toastWarning } from '@/utils/toast';
-import { saveToken, saveUserId, saveUserName, getToken, getUserId, getUserName, saveUserRole, getUserRole, saveUserFullName } from '@/utils/auth';
+import {
+  saveToken,
+  saveUserId,
+  saveUserName,
+  getToken,
+  getUserId,
+  getUserName,
+  saveUserRole,
+  getUserRole,
+  saveUserFullName,
+  saveUserEmail
+} from '@/utils/auth';
 import { auth, provider } from "@/utils/firebase.js"// Firebase imports
 import { signInWithPopup } from 'firebase/auth';
 export default createStore({
@@ -34,7 +45,7 @@ export default createStore({
     async login({ commit }, { email, password }) {
         const response = await apiClient.post('/api/account/login?api-version=1.0', { username: email, password });
         if (response.data.statusCode === 200) {
-          const { userId, fullName, email, username, role, accessToken, refreshToken } = response.data.data;
+          const { userId, fullName, email, username, role, accessToken, refreshToken, isActive, isConfirm  } = response.data.data;
           
           const user = { userId, fullName, email, username, role };
           
@@ -49,11 +60,14 @@ export default createStore({
           saveToken(accessToken, refreshToken);
           saveUserId(userId);
           saveUserFullName(fullName);
+          saveUserEmail(email);
           saveUserName(username);
           saveUserRole(role);
           toastSuccess("Đăng nhập thành công!");
+          return { Success: true, IsActive: isActive, IsConfirm: isConfirm };
         } else {
           toastWarning(response.data.message);
+          return { Success: false, IsActive: false, IsConfirm: false };
         }
       
     },

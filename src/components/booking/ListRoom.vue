@@ -8,7 +8,8 @@
 
                     <div class="room-info">
                         <h3 class="room-name">{{ room.name }}</h3>
-                        <p class="room-location">Giá phòng/1 ngày: 350.000 VND</p>
+                        <label for="homestay-name"> Homestay: </label>
+                        <h3 class="homestay-name">{{ room.homestayName }}</h3>
                         <p class="room-location">Vị trí: {{ room.locationResponse != null ?
                             room.locationResponse.description : '' }}</p>
                         <p class="room-status">Trạng thái: {{ formatBarnStatus(room.status) }}</p>
@@ -72,7 +73,9 @@ export default {
             showModal: false,
             imgs,
             loading: false,
-            barns: []
+            barns: [],
+          pageSize: 12,
+          currentPage: 1
         };
     },
     methods: {
@@ -86,7 +89,7 @@ export default {
         },
         fetchBarn() {
             this.loading = true;
-            storeApiPrivate.get('/api/BarnDetails?api-version=1.0', {
+            storeApiPrivate.get('/api/barns?api-version=1.0', {
                 params: {
                     PageNumber: this.currentPage,
                     pageSize: this.pageSize,

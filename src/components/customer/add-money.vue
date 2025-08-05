@@ -1,23 +1,24 @@
 <template>
-    <div class="modal-overlay" @click.self="$emit('close')">
+    <div class="modal-overlay">
         <div class="modal-content">
             <!-- Nút Close -->
             <button class="close-btn" @click="$emit('close')">&times;</button>
-
+            <h3>Quét mã Qr để thanh toán</h3>
+          <div class="alert-callout success">
+            Vui lòng mở ứng dụng ngân hàng và quét mã QR để thanh toán.
+          </div>
+            <img :src="imageUrl" alt="QR Code for Payment" />
             <!-- Tiêu đề -->
-            <h2 class="modal-title">Nhập số tiền cần nạp</h2>
-
-            <!-- Input nhập số tiền -->
-            <input type="number" v-model="amount" placeholder="Nhập số tiền" class="money-input" />
-
             <!-- Nút Nạp tiền -->
-            <button class="submit-btn" @click="confirmAddMoney">Nạp tiền</button>
+            <button class="submit-btn" @click="confirmAddMoney">Xác nhận</button>
         </div>
     </div>
 </template>
 
 <script>
 export default {
+    props: ['imageUrl'],
+    emits: ['submit-funds'],
     data() {
         return {
             amountRaw: null 
@@ -37,12 +38,7 @@ export default {
     },
     methods: {
         confirmAddMoney() {
-            if (this.amountRaw && this.amountRaw > 0) {
-                alert(`Bạn đã nạp ${this.amountRaw.toLocaleString()} VND`);
-                this.$emit("close");
-            } else {
-                alert("Vui lòng nhập số tiền hợp lệ!");
-            }
+          this.$emit("submit-funds");
         }
     }
 };
@@ -122,5 +118,24 @@ export default {
 
 .submit-btn:hover {
     opacity: 0.8;
+}
+.alert-callout {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.alert-callout.success {
+  background-color: #fff8e1;
+  border: 1px solid #a6f3c3;
+  color: #8a6d00;
+}
+
+.alert-callout.error {
+  background-color: #ffe6e6;
+  border: 1px solid #f3a6a6;
+  color: #9f2f2f;
 }
 </style>

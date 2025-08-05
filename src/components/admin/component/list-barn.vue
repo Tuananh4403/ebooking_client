@@ -18,6 +18,7 @@
             <th>Vị trí</th>
             <th>Camera</th>
             <th>Trạng thái</th>
+            <th>Homestay</th>
             <th>Ngày tạo</th>
             <th></th>
           </tr>
@@ -31,6 +32,7 @@
             <td>{{ barn.locationId != null ? barn.locationResponse.name : '' }}</td>
             <td>{{ barn.cameraId != null ? barn.cameraResponse.name : '' }}</td>
             <td>{{ barn.status != null ? formatBarnStatus(barn.status) : '' }}</td>
+            <td>{{ barn.homestayName != null ? HomestayName  : '' }}</td>
             <td>{{ barn.createdTime != null ? formatDate(barn.createdTime) : '' }}</td>
             <td>
               <button class="edit-button" @click="openEditModal(barn.barnId)">Chỉnh sửa</button>
@@ -55,6 +57,7 @@ import AddUpdateBarn from '@/components/admin/component/add-update-barn.vue';
 import { storeApiPrivate } from '@/api/axios.js';
 import { toastError, toastWarning } from "@/utils/toast.js";
 import { formatBarnStatus } from "@/constants/barn-status.js"
+import { getUserRole} from "@/utils/auth.js";
 
 export default {
   name: 'ListBarn',
@@ -85,7 +88,7 @@ export default {
     },
     fetchBarn() {
       this.loading = true;
-      storeApiPrivate.get('/api/BarnDetails?api-version=1.0', {
+      storeApiPrivate.get('/api/barns?api-version=1.0', {
         params: {
           PageNumber: this.currentPage,
           pageSize: this.pageSize,
@@ -279,31 +282,31 @@ export default {
 
 
 .example-one .pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  column-gap: 10px;
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 20px !important;
+  column-gap: 10px !important;
 
 }
 
 .example-one .paginate-buttons {
-  height: 40px;
-  width: 40px;
-  border-radius: 20px;
-  cursor: pointer;
-  background-color: rgb(242, 242, 242);
-  border: 1px solid rgb(217, 217, 217);
+  height: 40px !important;
+  width: 40px !important;
+  border-radius: 20px !important;
+  cursor: pointer !important;
+  background-color: rgb(242, 242, 242) !important;
+  border: 1px solid rgb(217, 217, 217)  !important;
   color: black;
 }
 
 .example-one .paginate-buttons:hover {
-  background-color: #d8d8d8;
+  background-color: #d8d8d8 !important;
 }
 
 .example-one .active-page {
-  background-color: #3498db;
-  border: 1px solid #3498db;
-  color: white;
+  background-color: #3498db !important;
+  border: 1px solid #3498db !important;
+  color: white !important;
 }
 
 .example-one .active-page:hover {

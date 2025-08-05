@@ -42,12 +42,28 @@
         <div class="modal-section row">
           <div class="col-6">
             <label>Ngày nhận:</label>
-            <vue-date-picker v-model="checkIn" :min-date="new Date()" :enable-time-picker="false" />
+            <vue-date-picker v-model="checkIn" :min-date="new Date()" :disabled-dates="bookedDates" :enable-time-picker="false" />
           </div>
           <div class="col-6">
             <label>Ngày trả:</label>
-            <vue-date-picker v-model="checkOut" :min-date="checkIn" :enable-time-picker="false" />
+            <vue-date-picker v-model="checkOut" :min-date="checkIn" :disabled-dates="bookedDates" :enable-time-picker="false" />
           </div>
+        </div>
+        <div class="form-group">
+          <label for="location">Camera:<span class="required">*</span></label>
+          <vue-multiselect v-model="selectedServices" :options="listService" :multiple="true" placeholder="Chọn dịch vụ"
+                           label="name" track-by="id" :searchable="true" selectLabel="" selectedLabel="" deselectLabel=""
+                           :taggable="true" @search-change="fetchServices($event)" @open="fetchServices('')">
+            <template #option="{ option }">
+              <span>{{ option.name }} - {{ format(option.price) }}</span>
+            </template>
+            <template #noResult>
+              <span class="no-results-text">Không tìm thấy</span>
+            </template>
+            <template #noOptions>
+              <span class="no-results-text">Không tìm thấy</span>
+            </template>
+          </vue-multiselect>
         </div>
         <div class="modal-section">
           <div class="price-info">
@@ -59,7 +75,8 @@
     </div>
   </div>
   <Teleport to="body">
-    <BookingModal v-if="showBookingModal" :pets="pets" @close-booking-modal="closeBookingModal" @submit="submit" />
+    <BookingModal v-if="showBookingModal" :pets="pets" @close-booking-modal="closeBookingModal" @submit="submit"
+                  :services="selectedServices" :check-in="checkIn.toString()" :check-out="checkOut.toString()" />
   </Teleport>
 </template>
 
@@ -68,10 +85,27 @@ import imgs from '../../../js/images';
 import BookingModal from './Booking.vue'
 import { bookingApiPrivate, customerApiPrivate, storeApiPrivate } from "@/api/axios.js";
 import { toastError, toastSuccess, toastWarning } from "@/utils/toast.js";
-import { getUserId } from "@/utils/auth.js";
+import {useCurrencyFormatter} from "@/utils/useNumberFormatter.js"
+import {getUserFullName, getUserId} from "@/utils/auth.js";
 export default {
+  emits: ['close-modal'],
   components: {
     BookingModal
+  },
+  setup() {
+    const { format } = useCurrencyFormatter('vi-VN', 'VND');
+    const formatDateTime = (date) => {
+      return new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false, // Use 24-hour format; change to true for 12-hour format with AM/PM
+      });
+    };
+    return { format, formatDateTime };
   },
   data() {
     return {
@@ -84,7 +118,9 @@ export default {
       currentPage: 1,
       checkIn: '',
       checkOut: '',
-      selectedServices: []
+      selectedServices: [],
+      bookedDates: [],
+      isLoading: true
     }
   },
   props: {
@@ -101,7 +137,8 @@ export default {
     selectedServiceIds() {
       return this.selectedServices.map(service => ({
         serviceId: service.id,
-        quantity: 1
+        quantity: 1,
+        price: service.price,
       }));
     }
   },
@@ -196,6 +233,26 @@ export default {
           this.loading = false;
         });
     },
+    fetchBookedDates() {
+      this.loading = true;
+      bookingApiPrivate.get(`/api/booking/booked-dates?api-version=1.0&barnId=${this.selectedRoom.id}`, {
+      })
+          .then(response => {
+            if (response.data.statusCode === 200) {
+              const data = response.data.data;
+              this.bookedDates = data.map(date => new Date(date));
+            } else {
+              console.error('Dữ liệu API không đúng định dạng:', response.data);
+            }
+          })
+          .catch(error => {
+            toastError("Không thể lấy dữ liệu, vui lòng liên hệ admin!");
+            console.error(error);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+    },
     submit(selectedPet) {
       var data = {
         petId: selectedPet.id,
@@ -203,9 +260,11 @@ export default {
         checkinDate: this.checkIn,
         checkoutDate: this.checkOut,
         customerId: getUserId(),
-        BarnId: this.selectedRoom.barnId,
+        BarnId: this.selectedRoom.id,
         BarnName: this.selectedRoom.name,
-        BookingDetailRequest: this.selectedServiceIds
+        TotalPrice: selectedPet.totalPrice,
+        customerName: getUserFullName(),
+        BookingDetails: this.selectedServiceIds
       }
       bookingApiPrivate.post(`/api/booking?api-version=1.0`, data)
         .then(response => {
@@ -226,6 +285,7 @@ export default {
   created() {
     this.fetchServices();
     this.fetchFeedBack();
+    this.fetchBookedDates();
   }
 };
 </script>

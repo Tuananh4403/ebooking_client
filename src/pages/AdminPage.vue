@@ -50,9 +50,13 @@ export default {
 }
 
 /* Main content styling */
+
 .main-content {
+  margin-left: 30px;  /* leave space for sidebar */
+  padding-top: 60px;  /* leave space for header */
   flex-grow: 1;
-  padding: 20px;
-  overflow: auto;
+  background: #f9f9f9;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 </style>

@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import {apiClient} from "@/api/axios.js";
+
 export default {
   props: {
     showResetModal: Boolean
@@ -34,7 +36,7 @@ export default {
   methods: {
     validateEmail() {
       this.errorMessage = '';
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.(gmail\.com|fpt\.edu\.vn))$/;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.email) {
         this.errorMessage = 'Vui lòng nhập email';
       } else if (!emailPattern.test(this.email)) {
@@ -42,14 +44,21 @@ export default {
       }
     },
     handleSubmit() {
+      this.validateEmail();
       if (!this.errorMessage && this.email) {
-        alert(`Đã gửi yêu cầu đến email: ${this.email}`);
+        apiClient.post('/api/account/reset-password?api-version=1.0', { email: this.email })
+        .then(response => {
+          if (response.data.statusCode === 201) {
+            alert(`Đã gửi yêu cầu đến email: ${this.email}`);
+            this.closeModal();
+          }
+        });
       } else {
-        this.validateEmail();
         alert('Vui lòng kiểm tra lại thông tin và thử lại!');
       }
     },
     closeModal() {
+      this.email = '';
       this.$emit('update:showResetModal', false);
     }
   }

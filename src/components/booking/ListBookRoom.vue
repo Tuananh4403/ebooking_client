@@ -7,8 +7,8 @@
         <p class="room-location">Khách hàng: {{ room.customerName }}</p>
         <p class="room-location">Thú cưng: {{ room.petName }}</p>
         <p class="room-status">Ngày đặt phòng: {{ formatDate(room.checkInDate) }}</p>
-        <p class="room-status">Trạng thái xét duyệt: {{ formatBookingStatus(room.status) }}</p>
-        <button class="book-now-btn">Hủy phòng</button>
+        <p class="room-status">Trạng thái: {{ formatBookingStatus(room.status) }}</p>
+        <button v-if="room.status < 2" class="book-now-btn" @click="cancelBooking(room)">Hủy phòng</button>
       </div>
     </div>
     <div v-if="totalCount > pageSize" class="example-one pagination-container">
@@ -31,8 +31,11 @@ import {bookingApiPrivate} from "@/api/axios.js";
 import {toastSuccess, toastWarning} from "@/utils/toast.js";
 import {getUserId} from "@/utils/auth.js";
 import {formatBookingStatus} from "@/constants/booking-status.js";
-
+import Swal from "sweetalert2";
 export default {
+  computed: {
+
+  },
   components: {
     ModalDetail
   },
@@ -68,6 +71,37 @@ export default {
     },
     formatBookingStatus(status) {
       return formatBookingStatus(status);
+    },
+    cancelBooking(room) {
+      Swal.fire({
+        title: 'Xác nhận hủy phòng?',
+        text: room.status == 0 ? "Bạn có chắc muốn hủy đặt chổ!" : "Bạn sẽ được hoàn 50% phí nếu hủy đặt phòng.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Gọi API hủy phòng
+          bookingApiPrivate.post(`/api/booking/cancel?api-version=1.0`,
+            room.id
+          )
+              .then(res => {
+                if (res.data.statusCode === 200) {
+                  Swal.fire('Đã hủy!', room.status == 0 ? 'Bạn đã hủy phòng thành công và được hoàn phí' : 'Bạn đã hủy phòng thành công và được hoàn 50% phí.', 'success');
+                  this.fetchBooking();
+                } else {
+                  Swal.fire('Lỗi!', 'Không thể hủy phòng. Vui lòng thử lại.', 'error');
+                }
+              })
+              .catch(err => {
+                Swal.fire('Lỗi!', 'Xảy ra lỗi khi hủy phòng.', 'error');
+                console.error(err);
+              });
+        }
+      });
     },
     fetchBooking() {
       var userId = getUserId()

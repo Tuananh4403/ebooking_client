@@ -1,244 +1,247 @@
 <template>
-    <div class="modal-overlay">
-        <div class="modal-content">
-            <button class="close-btn" @click="closeModal">&times;</button>
+  <div class="modal-overlay" @click.self="$emit('close')">
+    <div class="modal-content">
+      <button class="close-button" @click="closeModal">&times;</button>
 
-            <h3 class="modal-title">Thông tin thú cưng</h3>
-            <img :src="imgs.meo" alt="Pet" class="img-fluid pet-image" />
+      <div class="video-section">
+        <video controls autoplay>
+          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        </video>
+      </div>
 
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Tên:</label>
-                    <input v-model="pet.name" type="text" />
-                  <p v-if="errors.name" class="text-danger text-italic">{{ errors.name }}</p>
-                </div>
-                <div class="form-group">
-                  <label for="petAge">Ngày  sinh <span class="note">*</span></label>
-                  <input type="date" id="petAge" v-model="pet.birthday" class="form-control" required />
-                  <p v-if="errors.birthday" class="text-danger text-italic">{{ errors.birthday }}</p>
-                </div>
-                <div class="form-group">
-                  <label for="petGender">Giới tính <span class="note">*</span></label>
-                  <select id="petGender" v-model="pet.gender" class="form-control" required>
-                    <option value="">Chọn giới tính</option>
-                    <option value="true">Đực</option>
-                    <option value="false">Cái</option>
-                  </select>
-                  <p v-if="errors.gender" class="text-danger text-italic">{{ errors.gender }}</p>
-                </div>
-                <div class="form-group">
-                  <label for="petKind">Giống loài <span class="note">*</span></label>
-                  <select id="petKind" v-model="pet.type" class="form-control" required>
-                    <option value="">Chọn Giống</option>
-                    <option value="dog">Chó</option>
-                    <option value=" cat"> Mèo</option>
-                  </select>
-                  <p v-if="errors.type" class="text-danger text-italic">{{ errors.type }}</p>
-                </div>
-                <div class="button-group">
-                    <button @click="updatePet" class="btn btn-primary">Cập nhật</button>
-                    <button @click="deletePet" class="btn btn-danger">Xóa</button>
-                </div>
+      <div class="dropdown-container">
+        <div class="dropdown">
+          <button class="dropdown-button" @click="toggleDropdown('petInfo')">
+            Thông tin thú cưng
+          </button>
+          <div v-if="activeDropdown === 'petInfo'" class="dropdown-content">
+            <div class="info-box">
+              <p><strong>Tên:</strong> {{ petInfo.petName }}</p>
+              <p><strong>Ngày sinh:</strong> {{ petInfo.birthday }}</p>
+              <p><strong>Giới tính:</strong> {{ petInfo.petGender ? 'Đực' : 'Cái' }}</p>
+              <p><strong>Chủng loại:</strong> {{ petInfo.petType }}</p>
             </div>
+          </div>
         </div>
+
+        <div class="dropdown">
+          <button class="dropdown-button" @click="toggleDropdown('bookingInfo')">
+            Thông tin đặt phòng
+          </button>
+          <div v-if="activeDropdown === 'bookingInfo'" class="dropdown-content">
+            <div class="info-box">
+<!--              <p><strong>Khách sạn:</strong> {{ petInfo.hotelName || 'Chưa có' }}</p>-->
+              <p><strong>Phòng:</strong> {{ petInfo.barnName || 'Chưa có' }}</p>
+              <p><strong>Thời gian thuê:</strong> {{ petInfo.timeRent + " ngày"  || 'Chưa có' }}</p>
+              <p><strong>Check-in:</strong> {{ petInfo.timeIn || 'Chưa check-in' }}</p>
+              <p><strong>Check-out:</strong> {{ petInfo.timeOut || 'Chưa check-out' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropdown-button" @click="toggleDropdown('dailyPetStatus')">
+            Thông tin cập nhật hàng ngày
+          </button>
+          <div v-if="activeDropdown === 'dailyPetStatus'" class="dropdown-content">
+            <div class="info-box">
+              <h4 class="daily-status-title">Lịch sử cập nhật</h4>
+
+              <div v-if="dailyPetStatus?.length">
+                <div
+                    v-for="(status, index) in dailyPetStatus"
+                    :key="index"
+                    class="status-card"
+                >
+                  <div class="status-date"><strong>Ngày: </strong> {{ formatDate(status.date) }}</div>
+                  <div class="status-detail">
+                    <strong>Tình trạng: </strong> {{ status.healthStatus || 'Không có' }}
+                  </div>
+                  <div class="status-detail">
+                    <strong>Hành vi: </strong> {{ status.behavior || 'Không có' }}
+                  </div>
+                  <div class="status-detail">
+                    <strong>Ghi chú: </strong> {{ status.notes || 'Không có' }}
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="text-muted empty-status">
+                <i>Chưa có cập nhật nào.</i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
-import imgs from '../../js/images';
+import {customerApiPrivate} from "@/api/axios.js";
+
 export default {
-    props: ['pet'],
-    data() {
-        return {
-            imgs,
-            errors: {
-              name: '',
-              birthday: '',
-              gender: '',
-              type: ''
-            }
-        };
+  props: {
+    petInfo: {
+      type: Object,
+      default: null
     },
-  computed: {
   },
-    methods: {
-      validateForm() {
-        this.errors = {};
-
-        let isValid = true;
-
-        if (!this.pet.name) {
-          this.errors.name = 'Vui lòng không để trống tên thú cưng';
-          isValid = false;
-        }
-        if (!this.pet.birthday) {
-          this.errors.birthday = 'Vui lòng chọn ngày sinh';
-          isValid = false;
-        } else if (new Date(this.pet.birthday) > new Date()) {
-          this.errors.birthday = 'Vui lòng chọn ngày sinh bé hơn ngày hiện tại';
-          isValid = false;
-        }
-        if (!this.pet.gender) {
-          this.errors.gender = 'Vui lòng chọn giới tính';
-          isValid = false;
-        }
-        if (!this.pet.type) {
-          this.errors.type = 'Vui lòng không để trống giống loài';
-          isValid = false;
-        }
-
-        return isValid;
-      },
-        closeModal() {
-            this.$emit("close");
-        },
-        updatePet() {
-        if(this.validateForm())
-        {
-
-        }
-        },
-        deletePet() {
-            console.log("Xóa thú cưng", this.pet);
-            this.$emit("close");
-        }
+  data() {
+    return {
+      activeDropdown: null,
+      dailyPetStatus: [],
+    };
+  },
+  methods: {
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    },
+    toggleDropdown(section) {
+      this.activeDropdown = this.activeDropdown === section ? null : section;
+    },
+    closeModal() {
+      this.$emit("close");
     }
+  },
+  created() {
+    customerApiPrivate.get(`/api/history-barn/${this.petInfo.id}?api-version=1.0`)
+        .then((response) => {
+          if (response.data.statusCode === 200) {
+              this.dailyPetStatus = response.data.data.dailyStatuses;
+            console.log(this.dailyPetStatus);
+
+          }
+        })
+  }
 };
 </script>
 
 <style scoped>
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 2000;
 }
 
 .modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 60%;
-    max-width: 500px;
-    max-height: 80vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
+  background: white;
+  width: 60vw;
+  max-height: 80vh;
+  padding: 20px;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
-.modal-title {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+.close-button {
+  position: absolute;
+  top: -3px;
+  right: -8px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #425A8B;
+  cursor: pointer;
 }
 
-.modal-body {
-    text-align: left;
-    flex-grow: 1;
-    overflow-y: scroll;
+.close-button:hover {
+  color: rgb(186, 184, 184);
 }
 
-.modal-body::-webkit-scrollbar {
-    display: none;
+.video-section {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.pet-image {
-    width: 100%;
-    max-width: 150px;
-    height: auto;
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    display: block;
+.video-section video {
+  width: 100%;
+  border-radius: 10px;
 }
 
-.form-group {
-    margin-bottom: 15px;
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
+.dropdown {
+  width: 100%;
 }
 
-.form-group input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: none;
-    border-bottom: 2px solid #ddd;
-    background-color: white;
+.dropdown-button {
+  width: 100%;
+  padding: 10px;
+  background: #425A8B;
+  color: white;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-bottom: 1px solid #0b3e76;
+.dropdown-content {
+  margin-top: 5px;
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
 }
 
-.button-group {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+.info-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background: #f9f9f9;
+}
+.daily-status-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #22445d;
 }
 
-button {
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+.status-card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-left: 4px solid #4caf50;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-button:hover {
-    opacity: 0.8;
+.status-date {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
 }
 
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    color: #425A8B;
-    cursor: pointer;
+.status-detail {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 4px;
 }
 
-.close-btn:hover {
-    color: rgb(186, 184, 184);
+.text-muted.empty-status {
+  color: #888;
+  text-align: center;
+  padding: 12px;
 }
 
-.button-group button {
-    flex: 1;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.button-group .btn-primary {
-    background-color: #425A8B;
-    color: white;
-    border: none;
-}
-
-.button-group .btn-primary:hover {
-    background-color: rgb(186, 184, 184);
-}
-
-.button-group .btn-danger {
-    background-color: #6f030e;
-    color: white;
-    border: none;
-}
-
-.button-group .btn-danger:hover {
-    background-color: rgb(186, 184, 184);
-}
 </style>

@@ -19,6 +19,9 @@ import AddPetForm from './CreatePet.vue';
 import { getUserId } from "@/utils/auth.js";
 import { customerApiPrivate, storeApiPrivate } from "@/api/axios.js";
 import { toastError, toastSuccess, toastWarning } from "@/utils/toast.js";
+import images from "@/js/images.js";
+const customerServiceUrl = import.meta.env.VITE_CUSTOMER_SERVICE_URL;
+import {formatDate} from "@/utils/common.js";
 
 export default {
   components: {
@@ -59,6 +62,7 @@ export default {
             const data = response.data.data;
             this.pets = data.data.map(pet => ({
               ...pet,
+              image: pet.imagePath != null ? customerServiceUrl+ '/' + pet.imagePath : images.meo,
               birthday: pet.birthday ? new Date(pet.birthday).toISOString().split('T')[0] : '' // Định dạng YYYY-MM-DD
             }));
             this.totalCount = data.totalRecords;
@@ -80,12 +84,14 @@ export default {
       try {
         var userId = getUserId();
         const data = new FormData();
-        console.log(newPet);
         data.append('name', newPet.name);
         data.append('Type', newPet.type);
         data.append('Gender', newPet.gender);
         data.append('Birthday', newPet.birthday);
-
+        const fileInput = document.getElementById("petImage");
+        if (fileInput && fileInput.files[0]) {
+          data.append('image', fileInput.files[0]);
+        }
         customerApiPrivate.post(`/api/${userId}/pets?api-version=1.0`, data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })

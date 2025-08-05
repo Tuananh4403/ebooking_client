@@ -2,16 +2,15 @@
   <div class="row">
     <div v-for="(pet, index) in pets" :key="index" class="col-md-3 mb-4">
       <div class="pet-box" @click="openModal(pet)">
-        <img :src="imgs.meo" alt="Pet" class="img-fluid" />
-        <h5>{{ pet.name }}</h5>
-        <p>Ngày sinh: {{ formatDate(pet.birthday) }}</p>
-        <p>Giới tính: {{ pet.gender ? 'Đực' : 'Cái'}}</p>
-        <p>Loài: {{ pet.type == 'dog' ? 'Chó' : 'Mèo ' }}</p>
+        <img :src="pet.image" alt="Pet" class="img-fluid" />
+        <h5>{{ pet.petName }}</h5>
+        <p>Chuồng: {{ pet.barnName }}</p>
+        <p>Ngày check-in: {{ formatDate(pet.timeIn)}}</p>
       </div>
     </div>
   </div>
   <Teleport to="body">
-    <PetDetail v-if="showModal" :pet="currentPet" @close="closeModal" />
+    <PetDetail v-if="showModal" :petInfo="currentPet" @close="closeModal" />
   </Teleport>
 </template>
 
@@ -32,6 +31,7 @@ export default {
       showModal: false
     }
   },
+
   methods: {
     formatDate(dateString) {
       if (!dateString) return '';

@@ -6,6 +6,7 @@ import Pet from "@/components/pet/Index.vue";
 import ListRoomEmpty from "@/components/booking/Index.vue";
 import ListBooking from "@/components/booking/ListBooking.vue";
 import AdminPage from "@/pages/AdminPage.vue";
+import dashboard from "@/components/admin/dashboard.vue";
 import listBarn from "@/components/admin/component/list-barn.vue";
 import listLocation from "@/components/admin/component/list-location.vue";
 import listCamera from "@/components/admin/component/list-camera.vue";
@@ -14,12 +15,18 @@ import ListBookingOrder from "@/components/admin/component/list-booking-order.vu
 import HistoryTransaction from "@/components/customer/history-page.vue";
 import HomePageIndex from "@/components/customer/home-page.vue";
 import BarnType from "@/components/admin/component/list-type-barn.vue"
-import Report from "@/components/admin/dashboard.vue"
-import ListStaff from "@/components/admin/component/list-staff.vue"
+import WalletPage from "@/components/customer/WalletPage.vue";
+import VnPayCallback from "@/components/customer/VnPayCallback.vue";
+import ConfirmBooking from "@/components/booking/ConfirmBooking.vue";
+import StayBarn from "@/components/admin/component/stay-barn.vue";
+import BarnHistory from "@/components/barn-history/index.vue";
+import ListTransactionAwait from "@/components/admin/component/list-transaction-new.vue"
+import ListTransaction from "@/components/admin/component/list-transaction.vue";
 const route = [
   {
     path: "/",
     component: HomePage,
+    redirect: "/trang-chu",
     meta: { role: "customer" },
     children: [
       {
@@ -47,10 +54,31 @@ const route = [
         name: "ListBooking",
         component: ListBooking,
       },
+      // {
+      //   path: "/history-transaction",
+      //   name: "HistoryTransaction",
+      //   component: HistoryTransaction,
+      // },
+
       {
         path: "/history-transaction",
-        name: "HistoryTransaction",
-        component: HistoryTransaction,
+        name: "WalletPage",
+        component: WalletPage,
+      },
+      {
+        path: "vnpay/callback",
+        name: "VnPayCallback",
+        component: VnPayCallback,
+      },
+      {
+        path: "/barn-history",
+        name: "BarnHistory",
+        component: BarnHistory,
+      },
+      {
+        path: "booking-confirm/:id",
+        name: "ConfirmBooking",
+        component: ConfirmBooking,
       },
       {
         path: "/trang-chu",
@@ -62,8 +90,13 @@ const route = [
   {
     path: "/admin",
     component: AdminPage,
-    // meta: { role: "admin" },
+    redirect: "admin/dashboard",
+    meta: { role: "admin" },
     children: [
+      {
+        path: "dashboard",
+        component: dashboard,
+      },
       {
         path: "danh-sach-chuong",
         component: listBarn,
@@ -89,40 +122,46 @@ const route = [
         component:BarnType,
       },
       {
-        path: "report",
-        component:Report,
+        path: "danh-sach-luu-tru",
+        component:StayBarn,
       },
       {
-        path: "danh-sach-nhan-vien",
-        component:ListStaff,
-      }
+        path: "transaction-await",
+        name: "ListTransactionAwait",
+        component: ListTransactionAwait,
+      },
+      {
+        path: "list-transaction",
+        name: "ListTransaction",
+        component: ListTransaction,
+      },
     ],
   },
 ];
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: route,
-});
 // const router = createRouter({
-//   history: createWebHistory('/'),
-//   routes
-// })
+//   history: createWebHistory(import.meta.env.BASE_URL),
+//   routes: route,
+// });
+const router = createRouter({
+  history: createWebHistory('/'),
+  routes: route,
+})
 // router.beforeEach(async (to, from, next) => {
 //   const token = getToken();
-
+//
 //   if (to.matched.some((record) => record.meta.requiresAuth)) {
 //     // Check if the user is authenticated
 //     if (!store.getters.isAuthenticated) {
 //       next({ name: 'HomePage' });
 //       return;
 //     }
-
+//
 //     // Check if the token has expired
 //     if (isTokenExpired(token.accessToken)) {
 //       try {
 //         await store.dispatch('refreshAccessToken');
 //         const newToken = getToken();
-
+//
 //         if (isTokenExpired(newToken.refreshToken)) {
 //           store.dispatch('logout');
 //           next({ name: 'HomePage' });
@@ -135,7 +174,7 @@ const router = createRouter({
 //         return;
 //       }
 //     }
-
+//
 //     // Role authorization check
 //     const requiredRoles = to.meta.role;
 //     const userRoles = store.getters.userRole;
@@ -144,7 +183,7 @@ const router = createRouter({
 //       return;
 //     }
 //   }
-
+//
 //   next();
 // });
 

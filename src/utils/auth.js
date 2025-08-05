@@ -6,6 +6,7 @@ const userId = 'user_id';
 const userName = 'user_name';
 const roleTitle = 'role_title';
 const fullName = 'full_name';
+const userEmail = 'user_email';
 
 const objCookies = {
   path: '/',
@@ -46,7 +47,13 @@ export const saveUserName = (name) => {
     Cookies.remove(userName, objCookies);
   }
 };
-
+export const saveUserEmail = (email) => {
+  if (email) {
+    Cookies.set(userEmail, email, objCookies);
+  } else {
+    Cookies.remove(userEmail, objCookies);
+  }
+};
 export const saveUserRole = (roles) => {
   if (roles) {
     const dataSave = roles;
@@ -82,3 +89,5 @@ export const getUserName = () => Cookies.get(userName);
 export const getUserFullName = () => Cookies.get(fullName);
 
 export const getUserRole = () => Cookies.get(roleTitle);
+
+export const getUserEmail = () => Cookies.get(userEmail);

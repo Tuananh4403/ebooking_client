@@ -30,6 +30,7 @@
                 <li class="has-children"><router-link to="/pet">Thú cưng</router-link>
                   <ul class="sub-menu">
                     <li><router-link to="/pet">Thú cưng của tôi</router-link></li>
+                    <li><router-link to="/barn-history">Lịch sử lưu chuồng</router-link></li>
                   </ul>
                 </li>
                 <li class="has-children"><router-link to="/history-transaction">Thanh toán</router-link>

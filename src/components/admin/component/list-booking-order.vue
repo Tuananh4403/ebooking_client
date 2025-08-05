@@ -43,8 +43,8 @@
                       <td>{{ formatDate(order.checkInDate) ?? '' }}</td>
                       <td>{{ formatBookingStatus(order.status) ?? '' }}</td>
                         <td>
-                            <button class="edit-button" @click="openModal">Checkin</button>
-                            <button class="delete-button" @click="checkOut(camera.id)">Checkout</button>
+                            <button v-if="order.status==1" class="edit-button"  @click="openModal">Checkin</button>
+                            <button v-else-if="order.status==2" class="delete-button" @click="openModalCheckout(order)">Checkout</button>
                         </td>
                     </tr>
                 </tbody>
@@ -56,22 +56,27 @@
         </div>
 
         <Checkin v-if="showModal" @close="closeModal" />
+        <Checkout v-if="showModalCheckout" @close="closeModalCheckout" :order="selectedOrder" />
+
     </div>
 </template>
 
 
 <script>
 import Checkin from "@/components/admin/component/checkin.vue";
+import Checkout from "@/components/admin/component/checkout.vue";
 import {bookingApiPrivate, storeApiPrivate} from '@/api/axios.js';
 import { toastError, toastWarning } from "@/utils/toast.js";
-import {getUserId} from "@/utils/auth.js";
+import {getUserId, getUserRole} from "@/utils/auth.js";
 import {formatBookingStatus} from "@/constants/booking-status.js";
+import Swal from 'sweetalert2';
 import { BOOKING_STATUS } from '@/constants/booking-status.js';
 
 export default {
     name: "ListBarn",
     components: {
         Checkin,
+      Checkout,
     },
     data() {
         return {
@@ -84,6 +89,9 @@ export default {
             pageSize: 10,
             totalCount: 0,
             loading: false,
+            userRole: '',
+            showModalCheckout: false,
+            selectedOrder: null,
             statusOptions: [
                 { label: "Tất cả", value: "" },
                 ...Object.entries(BOOKING_STATUS).map(([key, label]) => ({ value: key, label }))
@@ -103,6 +111,7 @@ export default {
         return formatBookingStatus(status);
       },
       fetchBooking() {
+
           bookingApiPrivate.get(`/api/booking?api-version=1.0`,
               {
                 params: {
@@ -142,8 +151,17 @@ export default {
         closeModal() {
             this.showModal = false;
         },
+      openModalCheckout(order) {
+        console.log(order);
+        this.showModalCheckout = true;
+        this.selectedOrder =order;
+      },
+      closeModalCheckout() {
+        this.showModalCheckout = false;
+      },
     },
     mounted() {
+        this.userRole = getUserRole();
         this.fetchBooking();
     },
 };
@@ -152,7 +170,7 @@ export default {
 
 <style lang="css" scoped>
 ::v-deep(.multiselect) {
-    width: 40% !important; 
+    width: 40% !important;
     max-width: 40%;
     margin-right: 5% !important;
 }
@@ -230,6 +248,7 @@ export default {
 
 .table-container {
     margin-top: 20px;
+    border-radius: 5px;
     overflow: hidden;
 }
 

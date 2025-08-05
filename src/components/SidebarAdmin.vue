@@ -1,18 +1,36 @@
 <template>
-  <div class="sidebar" :class="{ expanded: isExpanded }" @click.stop>
-    <div v-for="item in menuItems" :key="item.name" class="menu-item" @click="toggleExpand(item)">
+  <div
+      class="sidebar"
+      :class="{ expanded: isExpanded }"
+      @click.stop
+  >
+    <div
+        v-for="item in menuItems"
+        :key="item.tooltip"
+        class="menu-item"
+        @click="toggleExpand(item)"
+    >
       <font-awesome-icon :icon="['fas', item.icon]" class="icon" />
-      <span class="tooltip">{{ item.tooltip }}</span>
+      <span class="tooltip" v-if="!isExpanded">{{ item.tooltip }}</span>
 
-      <div v-if="isExpanded && activeItem === item && item.submenu" class="submenu">
-        <router-link v-for="subItem in item.submenu" :key="subItem.name" :to="subItem.route" class="submenu-item">
-          {{ subItem.name }}
-        </router-link>
-      </div>
+      <transition name="fade-slide">
+        <div
+            v-if="isExpanded && activeItem === item && item.submenu"
+            class="submenu"
+        >
+          <router-link
+              v-for="subItem in item.submenu"
+              :key="subItem.name"
+              :to="subItem.route"
+              class="submenu-item"
+          >
+            {{ subItem.name }}
+          </router-link>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -21,17 +39,12 @@ export default {
       isExpanded: false,
       activeItem: null,
       menuItems: [
-        { icon: 'warehouse', 
-          tooltip: 'Báo cáo', 
-          submenu: [
-            { name: 'Báo cáo thống kê', route: '/admin/report' },
-          ],
-        },
+        { icon: 'warehouse', tooltip: 'Báo cáo', route: '/admin/dashboard' },
         {
           icon: 'user-plus',
           tooltip: 'Quản lí nhân sự',
           submenu: [
-            { name: 'Quản lí nhân viên', route: '/admin/danh-sach-nhan-vien' },
+            { name: 'Quản lí nhân viên', route: '/admin/register-staff-admin' },
           ],
         },
         {
@@ -49,29 +62,37 @@ export default {
           tooltip: 'Danh sách đơn hàng',
           submenu: [
             { name: 'Danh sách đơn hàng', route: '/admin/danh-sach-don-hang' },
+            { name: 'Danh sách lưu trú', route: '/admin/danh-sach-luu-tru' },
+            { name: 'Danh sách nạp tiền chờ sác nhận', route: '/admin/transaction-await' },
+            { name: 'Danh sách giao dịch', route: '/admin/list-transaction' },
           ],
         },
         {
           icon: 'door-open',
           tooltip: 'Đăng xuất',
           name: 'Logout',
-          submenu: [
-            { name: 'Phân công lịch chấm thi', route: '/admin/schedule-admin' },
-            { name: 'Lịch chấm thi', route: '/admin/list-schedule' },
-          ],
         },
       ],
     };
   },
   methods: {
     toggleExpand(item) {
-      if (item.name == "Logout") this.logout();
-      if (this.activeItem === item) {
-        this.isExpanded = false;
-        this.activeItem = null;
-      } else {
-        this.isExpanded = true;
+      if (item.name === "Logout") {
+        return this.logout();
+      }
+      if (item.submenu && item.submenu.length > 0) {
+        this.isExpanded = !this.isExpanded || this.activeItem !== item;
         this.activeItem = item;
+      } else if (item.route) {
+        this.$router.push(item.route);
+      }
+    },
+    logout() {
+      try {
+        this.$store.dispatch("logout");
+        this.$router.push("/");
+      } catch (error) {
+        console.error(error);
       }
     },
     handleClickOutside(event) {
@@ -80,105 +101,108 @@ export default {
         this.activeItem = null;
       }
     },
-    logout() {
-      try {
-        this.$store.dispatch('logout')
-        this.$router.push('/')
-      } catch (error) {
-        console.error(error)
-      }
-    },
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener("click", this.handleClickOutside);
   },
   beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside);
+    document.removeEventListener("click", this.handleClickOutside);
   },
 };
 </script>
 
 <style scoped>
 .sidebar {
-  width: 60px;
-  background-color: #A0937D;
-  color: #fdfdfd;
-  height: calc(100vh - 60px);
-  transition: width 0.3s;
-  position: fixed;
+  position: fixed; /* change from sticky */
+  top: 60px;
   left: 0;
+  height: 100vh;
+  width: 60px;
+  background-color: #4b3f2f;
+  color: #fff;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  z-index: 1;
+  padding: 15px 0;
+  transition: width 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.15);
+}
+
+
+.sidebar.expanded {
+  width: 300px;
 }
 
 .menu-item {
   position: relative;
-  margin: 20px 0;
-  cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.menu-item:hover {
+  background-color: #5a4a39;
 }
 
 .icon {
-  font-size: 24px;
-  margin-left: 10px;
+  font-size: 20px;
+  margin-right: 10px;
 }
 
 .tooltip {
-  visibility: hidden;
-  background-color: black;
+  background: #222;
   color: #fff;
-  text-align: left;
-  white-space: nowrap;
-  border-radius: 6px;
-  padding: 5px;
+  padding: 4px 10px;
+  border-radius: 4px;
   position: absolute;
-  z-index: 10000;
-  left: calc(100% + 10px);
+  left: 70px;
   top: 50%;
   transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 14px;
   opacity: 0;
-  transition: opacity 0.3s;
+  visibility: hidden;
+  transition: all 0.2s;
+}
+
+.menu-item:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .submenu {
-  position: fixed;
-  top: 0;
-  left: 25%;
-  width: 200px;
-  padding: 10px;
+  margin-left: 35px;
+  margin-top: 10px;
   display: flex;
-  align-items: start;
   flex-direction: column;
-  opacity: 1;
-  transform: translateX(-10px);
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
-}
-
-.menu-item:hover .submenu {
-  opacity: 1;
-  visibility: visible;
-  width: 200px;
-  transform: translateX(0);
+  gap: 8px;
 }
 
 .submenu-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  color: #592b29;
-  cursor: pointer;
-  margin: 5px 0;
+  color: #fff;
+  padding: 6px 10px;
   text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-  border-radius: 5px;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: background 0.2s, padding-left 0.2s;
 }
+
 .submenu-item:hover {
-  background-color: #5a3d2b; 
-  color: white; 
-  transform: translateX(5px); 
+  background-color: #6c584c;
+  padding-left: 15px;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

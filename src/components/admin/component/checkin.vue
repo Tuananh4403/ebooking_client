@@ -37,6 +37,7 @@
 import Swal from "sweetalert2";
 import {bookingApiPrivate} from "@/api/axios.js";
 import {toastWarning} from "@/utils/toast.js";
+import {getUserId, getUserRole} from "@/utils/auth.js";
 export default {
     data() {
         return {
@@ -49,7 +50,8 @@ export default {
                 checkoutTime: "2025-03-30 12:00",
                 roomNumber: "999",
                 petName: "Destiny"
-            }
+            },
+            userRole: ''
         };
     },
     methods: {
@@ -62,11 +64,11 @@ export default {
         return `${day}/${month}/${year}`;
       },
         fetchOrder() {
+
             bookingApiPrivate.get(`/api/booking/${this.checkinCode}?api-version=1.0`)
                 .then(response => {
                   if (response.data.statusCode === 200) {
                     var data = response.data.data;
-                    console.log(data)
                     this.order =data;
                   }
                 })
@@ -79,11 +81,47 @@ export default {
                 });
           },
         confirmCheckin() {
-            Swal.fire("Thành công", "Check-in thành công!", "success");
-            this.checkinCode = "";
+          var userId = getUserId();
+          var data = {
+            bookingId: this.order.id,
+            staffId: userId,
+          }
+          Swal.fire({
+            title: 'Đang xử lý...',
+            text: 'Vui lòng chờ trong giây lát',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+          bookingApiPrivate.post(`/api/booking/Checkin?api-version=1.0`, data)
+              .then(response => {
+                if (response.data.statusCode === 200) {
+                  var data = response.data.data;
+                  console.log(data);
+                  this.order = data;
+
+                  // Success Swal
+                  Swal.fire("Thành công", "Check-in thành công!", "success");
+                } else {
+                  // If statusCode not 200, show warning
+                  Swal.fire("Thất bại", "Dữ liệu không hợp lệ!", "warning");
+                }
+              })
+              .catch(error => {
+                console.error('Error during check-in:', error);
+                Swal.fire("Lỗi", "Lưu dữ liệu thất bại, vui lòng thử lại!", "error");
+              })
+              .finally(() => {
+                this.isLoading = false;
+              });
+
             this.$emit("close");
         },
-    }
+    },
+  created() {
+    this.userRole = getUserRole();
+  }
 };
 </script>
 

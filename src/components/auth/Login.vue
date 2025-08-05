@@ -50,6 +50,17 @@
       </div>
       <Teleport to="body">
         <ReSetPassword :showResetModal="showResetModal" @update:showResetModal="showResetModal = $event" />
+        <ConfirmEmail
+            :showResetModal="showConfirmEmailModal"
+            :email="form.email"
+            @update:showResetModal="showConfirmEmailModal = $event"
+        />
+        <ChangePasswordModal
+            :showChangePasswordModal="showChangePasswordModal"
+            :email="form.email"
+            @password-change-success="handlePasswordChangeSuccess"
+            @update:showChangePasswordModal="val => showChangePasswordModal = val"
+        />
       </Teleport>
     </div>
   </div>
@@ -57,11 +68,16 @@
 
 <script>
 import ReSetPassword from '@/components/auth/ResetPass.vue';
+import ConfirmEmail from "@/components/auth/ConfirmEmail.vue";
 import { getUserRole } from '@/utils/auth';
 import imgs from '../../js/images'
+import router from "@/router/router.js";
+import ChangePasswordModal from "@/components/auth/ChangePassword.vue";
 export default {
   components: {
-    ReSetPassword
+    ReSetPassword,
+    ConfirmEmail,
+    ChangePasswordModal
   },
   data() {
     return {
@@ -71,12 +87,27 @@ export default {
       },
       errors: {},
       showResetModal: false,
-      imgs
+      showConfirmEmailModal: false,
+      imgs,
+      showChangePasswordModal: false,
+      changePasswordEmail: ''
     }
   },
   methods: {
     openModalReset() {
       this.showResetModal = true;
+    },
+    openModalConfirmPassword() {
+      return new Promise((resolve) => {
+        this.showConfirmEmailModal = true;
+
+        const handler = (result) => {
+          this.$off('confirm-password-result', handler);
+          this.showConfirmEmailModal = false;
+          this.$router.push('/trang-chu');
+          resolve(result);
+        };
+      });
     },
     validateField(field) {
       this.errors[field] = '';
@@ -102,21 +133,38 @@ export default {
     },
     async handleLogin() {
       try {
-        await this.$store.dispatch('login', {
+        var response = await this.$store.dispatch('login', {
           email: this.form.email,
           password: this.form.password,
         });
-        if (getUserRole() === 'Customer') {
-          this.$router.push('/list-room-empty');
+        if(response.Success === true && !response.IsConfirm) {
+          const confirmed = await this.openModalConfirmPassword();
+          if (!confirmed) return;
+        }else if(response.Success === true && !response.IsActive) {
+          this.openChangePasswordModal(this.form.email)
         }
-        if (getUserRole() === 'Admin') {
-          this.$router.push('/admin');
+        else {
+          if (getUserRole() === 'Customer') {
+            this.$router.push('/list-room-empty');
+          }
+          if (getUserRole() === 'Admin') {
+            this.$router.push('/admin');
+          }
         }
+
       } catch (error) {
         console.error('Login failed:', error);
 
       }
     },
+    openChangePasswordModal(email) {
+      this.changePasswordEmail = email;
+      this.showChangePasswordModal = true;
+    },
+    handlePasswordChangeSuccess() {
+      this.showChangePasswordModal = false;
+      this.$router.push('/'); // hoặc reload hoặc chuyển trang tuỳ bạn
+    }
   }
 }
 </script>

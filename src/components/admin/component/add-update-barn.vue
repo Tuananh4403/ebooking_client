@@ -1,14 +1,24 @@
 <template>
   <div class="modal-overlay" @click.self="closeModal">
     <div class="modal-content">
-      <div class="icon-group">
-        <div class="redo-icon" @click="handleRedo">
-          <font-awesome-icon :icon="['fas', 'redo-alt']" />
-        </div>
-        <div class="close-icon" @click="closeModal">
-          <font-awesome-icon :icon="['fas', 'times-circle']" />
-        </div>
+      <div class="modal-header">
+        <img v-if="barnId != null" :src=' "/"+ imgs.hotel' alt="Room Image" class="modal-room-image" />
+        <img v-else :src=' "/"+ imgs.hotel' alt="Room Image" class="modal-room-image"/>
+                <div class="redo-btn redo-icon" @click="handleRedo">
+                  <font-awesome-icon :icon="['fas', 'redo-alt']" />
+                </div>
+                <div class="close-btn close-icon" @click="closeModal">
+                  <font-awesome-icon :icon="['fas', 'times-circle']" />
+                </div>
       </div>
+<!--      <div class="icon-group">-->
+<!--        <div class="redo-icon" @click="handleRedo">-->
+<!--          <font-awesome-icon :icon="['fas', 'redo-alt']" />-->
+<!--        </div>-->
+<!--        <div class="close-icon" @click="closeModal">-->
+<!--          <font-awesome-icon :icon="['fas', 'times-circle']" />-->
+<!--        </div>-->
+<!--      </div>-->
       <h2 v-if="barnId != null" class="form-title">Cập nhật chuồng</h2>
       <h2 v-else class="form-title">Tạo Chuồng Mới</h2>
 
@@ -98,6 +108,8 @@
 <script>
 import { storeApiPrivate } from '@/api/axios.js';
 import { toastError, toastSuccess, toastWarning } from "@/utils/toast.js";
+import imgs from '../../../js/images';
+const storeServiceUrl = import.meta.env.VITE_STORE_SERVICE_URL;
 
 export default {
   name: 'AddUpdateBarn',
@@ -117,7 +129,9 @@ export default {
         time: null,
         RegisterFee: null,
         image: null,
+        imagePath: null,
       },
+      imgs,
       types: [],
       locations: [],
       cameras: [],
@@ -171,12 +185,13 @@ export default {
     },
     fetchBarnDetails(id) {
       try {
-        storeApiPrivate.get(`/api/barnDetails/${id}?api-version=1.0`)
+        storeApiPrivate.get(`/api/barns/${id}?api-version=1.0`)
           .then(response => {
             if (response.data.statusCode === 200) {
               this.barn = response.data.data;
               this.form.name = this.barn.name;
               this.form.description = this.barn.description;
+              this.form.imagePath = this.barn.imagePath != null  ? storeServiceUrl + 'image/barn/' + this.barn.imagePath : null;
               this.selectedType = this.barn.barnTypeResponse;
               this.selectedLocation = this.barn.locationResponse;
               this.selectedCamera = this.barn.cameraResponse;
@@ -195,9 +210,11 @@ export default {
         data.append('barnTypeId', this.selectedType.id);
         data.append('locationId', this.selectedLocation.id);
         data.append('cameraId', this.selectedCamera.id ?? "");
+        data.append('image', this.form.image ?? "");
+
         if (this.form.image) data.append('image', this.form.image);
 
-        storeApiPrivate.post('/api/barnDetails?api-version=1.0', data, {
+        storeApiPrivate.post('/api/barns?api-version=1.0', data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
           .then(response => {
@@ -232,7 +249,7 @@ export default {
           cameraId: this.selectedCamera ? this.selectedCamera.id : '',
         }
 
-        storeApiPrivate.put(`/api/barnDetails/${this.id}?api-version=1.0`, data, {
+        storeApiPrivate.put(`/api/barns/${this.id}?api-version=1.0`, data, {
           headers: { "Content-Type": "application/json" },
         })
           .then(response => {
@@ -423,6 +440,12 @@ button:hover {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+.modal-room-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+}
 
 .rank-grid button {
   background-color: #0056b3;
@@ -435,5 +458,23 @@ button:hover {
 
 .rank-grid button:hover {
   background-color: #0056b3;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+.redo-btn {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.3s ease;
 }
 </style>
